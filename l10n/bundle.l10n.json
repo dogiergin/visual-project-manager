@@ -90,8 +90,6 @@
     "Show less": "Show less",
     "Suggested tags: {0}": "Suggested tags: {0}",
     "Accept suggested tags": "Accept suggested tags",
-    "Learn More": "Learn More",
-    "Ollaya is not running, so project categories are suggested with the fallback rules. Start the Ollaya app, or run `ollaya run laya` in a terminal.": "Ollaya is not running, so project categories are suggested with the fallback rules. Start the Ollaya app, or run `ollaya run laya` in a terminal.",
     "Invalid tag decisions file: {0}": "Invalid tag decisions file: {0}",
     "Good morning": "Good morning",
     "Good afternoon": "Good afternoon",

@@ -11,28 +11,19 @@ import * as vscode from "vscode";
 import { l10n } from "vscode";
 import { Container } from "../core/container";
 import { isRemotePath } from "../utils/remote";
-import { DEFAULT_TAG_DECISIONS, evaluateRules, mergeDecisions, TagDecisions } from "./decisions";
-import { decideCategories, isOllayaAvailable } from "./ollayaClient";
+import { decideTags, DEFAULT_TAG_DECISIONS, knownTags, mergeDecisions, TagDecisions } from "./decisions";
 import { getFolderSignature, scanProject } from "./projectScanner";
 import { fetchPublicTopics } from "../github/githubApi";
 import { dedupeTags, getGitHubRepository, tagKey } from "../github/githubTopics";
 
-export enum AutoTagsEngine {
-    auto = "auto",     // rules + Ollaya when its server is running
-    rules = "rules",   // rules only, Ollaya is never called
-    ollaya = "ollaya"  // rules + Ollaya, warns when the server is not running
-}
-
 interface CacheEntry {
-    signature: string;      // folder mtime + decisions hash + engine used
+    signature: string;      // folder mtime + decisions hash
     tags: string[];
-    categoriesBy: "ollaya" | "rules";
 }
 
 const CACHE_KEY = "autoTags.cache";
 const REJECTED_KEY = "autoTags.rejected";
 const DECISIONS_FILE = "tag-decisions.json";
-const AVAILABILITY_TTL = 60 * 1000;
 // the extension starts with VS Code: leave the first seconds to the editor
 const STARTUP_DELAY = 2000;
 const TOPICS_KEY = "autoTags.gitHubTopics";
@@ -52,9 +43,6 @@ export class AutoTagger {
     private running = false;
     private decisions: TagDecisions = DEFAULT_TAG_DECISIONS;
     private decisionsHash = "";
-    private ollayaCheckedAt = 0;
-    private ollayaAvailable = false;
-    private warnedOllayaMissing = false;
     private readonly createdAt = Date.now();
 
     private readonly onDidChangeEmitter = new vscode.EventEmitter<void>();
@@ -70,7 +58,6 @@ export class AutoTagger {
             vscode.commands.registerCommand("projectManager.refreshAutoTags", () => this.refreshAll()),
             vscode.workspace.onDidChangeConfiguration(cfg => {
                 if (cfg.affectsConfiguration("projectManager.autoTags")) {
-                    this.ollayaCheckedAt = 0;
                     this.onDidChangeEmitter.fire();
                 }
             }),
@@ -89,10 +76,6 @@ export class AutoTagger {
 
     public get enabled(): boolean {
         return this.config.get<boolean>("enabled", true);
-    }
-
-    private get engine(): AutoTagsEngine {
-        return this.config.get<AutoTagsEngine>("engine", AutoTagsEngine.auto);
     }
 
     private get decisionsFile(): string {
@@ -131,12 +114,7 @@ export class AutoTagger {
      */
     public isShareableTag(tag: string): boolean {
         const key = tagKey(tag);
-        const known = [
-            ...this.decisions.rules.map(rule => rule.tag),
-            ...Object.keys(this.decisions.ollaya.categories),
-            ...this.decisions.ollaya.fallbackRules.map(rule => rule.tag)
-        ];
-        return known.some(item => tagKey(item) === key);
+        return knownTags(this.decisions).some(item => tagKey(item) === key);
     }
 
     private get gitHubTopicsEnabled(): boolean {
@@ -195,9 +173,7 @@ export class AutoTagger {
             return false;
         }
 
-        const useOllaya = await this.shouldUseOllaya();
-        const categoriesBy = useOllaya ? "ollaya" : "rules";
-        const signature = `${folderSignature}|${this.decisionsHash}|${categoriesBy}`;
+        const signature = `${folderSignature}|${this.decisionsHash}`;
         const key = AutoTagger.key(rootPath);
 
         // topics of the GitHub repository, read without signing in (public repositories only)
@@ -223,59 +199,17 @@ export class AutoTagger {
             return false;
         }
 
-        let categories: string[];
-        let by: "ollaya" | "rules" = categoriesBy;
-        if (useOllaya) {
-            try {
-                categories = await decideCategories(summary, this.decisions.ollaya.categories, {
-                    url: this.config.get<string>("ollaya.url", "http://localhost:11435"),
-                    model: this.config.get<string>("ollaya.model", "laya"),
-                    threshold: this.decisions.ollaya.threshold
-                });
-            } catch (error) {
-                console.log("[Visual Project Manager] Ollaya failed, using the fallback rules", error);
-                this.ollayaCheckedAt = 0;
-                categories = evaluateRules(summary, this.decisions.ollaya.fallbackRules);
-                by = "rules";
-            }
-        } else {
-            categories = evaluateRules(summary, this.decisions.ollaya.fallbackRules);
-        }
-
-        const tags = dedupeTags([ ...categories, ...evaluateRules(summary, this.decisions.rules), ...topics ]);
+        const decided = decideTags(summary, this.decisions);
+        const tags = dedupeTags([ ...decided.categories, ...decided.technologies, ...topics ]);
         const previous = this.cache[ key ];
-        this.cache[ key ] = { signature: `${folderSignature}|${this.decisionsHash}|${by}`, tags, categoriesBy: by };
+        this.cache[ key ] = { signature, tags };
         return !previous || previous.tags.join("|") !== tags.join("|");
-    }
-
-    private async shouldUseOllaya(): Promise<boolean> {
-        const engine = this.engine;
-        if (engine === AutoTagsEngine.rules) {
-            return false;
-        }
-        if (Date.now() - this.ollayaCheckedAt > AVAILABILITY_TTL) {
-            this.ollayaAvailable = await isOllayaAvailable(this.config.get<string>("ollaya.url", "http://localhost:11435"));
-            this.ollayaCheckedAt = Date.now();
-        }
-        if (!this.ollayaAvailable && engine === AutoTagsEngine.ollaya && !this.warnedOllayaMissing) {
-            this.warnedOllayaMissing = true;
-            const learnMore = l10n.t("Learn More");
-            vscode.window.showWarningMessage(
-                l10n.t("Ollaya is not running, so project categories are suggested with the fallback rules. Start the Ollaya app, or run `ollaya run laya` in a terminal."),
-                learnMore).then(answer => {
-                if (answer === learnMore) {
-                    vscode.env.openExternal(vscode.Uri.parse("https://ollaya.dev/docs/quickstart"));
-                }
-            });
-        }
-        return this.ollayaAvailable;
     }
 
     public async refreshAll() {
         this.cache = {};
         this.topicsCache = {};
         await Container.context.globalState.update(TOPICS_KEY, this.topicsCache);
-        this.ollayaCheckedAt = 0;
         await Container.context.globalState.update(CACHE_KEY, this.cache);
         this.onDidChangeEmitter.fire();
     }
@@ -283,7 +217,7 @@ export class AutoTagger {
     // ---------------------------------------------------------------- decisions file
 
     private loadDecisions() {
-        let user: Partial<TagDecisions> | undefined;
+        let user: unknown;
         try {
             if (fs.existsSync(this.decisionsFile)) {
                 user = JSON.parse(fs.readFileSync(this.decisionsFile, "utf8"));

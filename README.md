@@ -30,12 +30,14 @@ A **Projects page** that opens instead of the classic Welcome page, with **pinne
 * Command `Project Manager: Open Projects Page` (`Ctrl+Alt+H` / `Cmd+Alt+H`)
 
 ### Automatic tags
-Nobody wants to tag dozens of projects by hand, so tags are **suggested automatically** from the files of each project (shown as ✨ _suggested_ until you accept them with the `A` key, the ✨ button, or the Edit Tags picker):
+Nobody wants to tag dozens of projects by hand, so tags are **suggested automatically** (shown as ✨ _suggested_ until you accept them with the `A` key, the ✨ button, or the Edit Tags picker):
 
-* **Technology tags** come from exact rules: `*.ipynb` → `Jupyter`, `*.py` / `requirements.txt` → `Python`, `pubspec.yaml` → `Flutter`, `pandas` dependency or import → `Pandas`...
-* **Category tags** (`Data Analysis`, `Machine Learning`, `Mobile Development`, `Web Development`, `Software Development`, `DevOps`, `Game Development`) are decided by [Ollaya](https://ollaya.dev), a local decision model runtime, when it is running. Each category is a yes/no question answered with a probability; the ones above the threshold are suggested. Without Ollaya, simple fallback rules are used.
-* Only a small summary is used (folder name, file type counts, top level files, dependencies and the start of the README). Everything runs **locally**: nothing leaves your computer.
-* Edit the rules and categories with `Project Manager: Edit Automatic Tag Decisions`. Settings: `projectManager.autoTags.enabled`, `projectManager.autoTags.engine` (`auto`, `rules`, `ollaya`), `projectManager.autoTags.ollaya.url`, `projectManager.autoTags.ollaya.model`
+* **50 categories** (what the project is about): `Data Analysis`, `Machine Learning`, `Generative AI`, `Mobile Development`, `Full Stack`, `Game Development`, `DevOps`, `Event Management`, `Competition / Kaggle`...
+* **90 technologies**: `Python`, `Jupyter`, `TypeScript`, `React`, `Flutter`, `FastAPI`, `Pandas`, `PyTorch`, `Docker`, `PostgreSQL`...
+* Decided by rules, from the files (`*.ipynb` → `Jupyter`, `pubspec.yaml` → `Flutter`), the dependencies and Python imports (`pandas` → `Pandas`, `Data Analysis`), and the words of the folder name or README title (`AI Engineer Program` → `Artificial Intelligence`). Rules can also combine tags (`Frontend` + `Backend` → `Full Stack`) or exclude them (a React Native app is not a website)
+* At most 5 categories (the most specific first) and 8 technologies per project
+* Everything runs **locally**, in a few milliseconds per project: only file names, dependencies and the README start are read, and nothing leaves your computer
+* Edit the rules with `Project Manager: Edit Automatic Tag Decisions`. Setting: `projectManager.autoTags.enabled`
 
 ### Tags on GitHub
 Tags can be shared with everybody through **GitHub topics** (the tags displayed on a repository page, and used by the GitHub search):
@@ -45,8 +47,6 @@ Tags can be shared with everybody through **GitHub topics** (the tags displayed 
 * **Publishing only shares technologies and categories** (`Python`, `Jupyter`, `Data Analysis`...), because topics are public. Personal tags like `Work` or a customer name always stay private
 * Tags become topics (`Data Analysis` → `data-analysis`, `C#` → `csharp`) and topics become tags. Nothing is ever removed
 * You always confirm what will be added before anything is written to GitHub. It signs in with the smallest permission (`public_repo`); the permission for private repositories is only requested for a private repository
-
-To use Ollaya, install it from [ollaya.dev](https://ollaya.dev) and keep it running (default address `http://localhost:11435`).
 
 ### Side Bar
 * A new **Pinned** view at the top of the Side Bar
@@ -112,7 +112,6 @@ npm test
   </table>
 
 * [vscode-icons](https://github.com/vscode-icons/vscode-icons) by the vscode-icons team - MIT
-* [Ollaya](https://ollaya.dev) - optional local decision runtime used for the category tags (Apache-2.0, not bundled)
 
 # Project Manager features
 

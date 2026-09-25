@@ -29,7 +29,7 @@ export interface HomeProject {
     name: string;
     displayPath: string;
     tags: string[];
-    suggestedTags: string[]; // automatic tags (rules / Ollaya) not accepted yet
+    suggestedTags: string[]; // automatic tags (rules / GitHub topics) not accepted yet
     github?: string;         // "owner/repo" when the project has a GitHub remote
     pinned: boolean;
     saved: boolean;

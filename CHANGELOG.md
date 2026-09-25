@@ -13,7 +13,7 @@ First release of **Visual Project Manager**, a fork of [Project Manager 13.1.1](
 - Turkish translation for the new features
 - Installs [vscode-icons](https://github.com/vscode-icons/vscode-icons) as part of an Extension Pack
 - Copies `projects.json` from Project Manager on the first run
-- Automatic tags: technology tags from rules, category tags from [Ollaya](https://ollaya.dev) (optional, local), editable decisions file
+- Automatic tags: 50 categories and 90 technologies decided by local rules (files, dependencies, folder name), editable decisions file
 - Projects page with folder tiles, Black & Blue theme and 3/6/9 limits
 - Sync tags with GitHub topics (two way, with confirmation)
 - Welcome header, "Continue where you left off" card and quick actions in the Projects page; clearer Side Bar buttons
