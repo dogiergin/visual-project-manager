@@ -3,7 +3,7 @@
 *  Licensed under the GPLv3 License. See License.md in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { codicons } from "vscode-ext-codicons";
+import { codicons } from "../utils/codicons";
 import { CustomRepositoryDetector } from "./repositoryDetector";
 
 export class SvnRepositoryDetector extends CustomRepositoryDetector {

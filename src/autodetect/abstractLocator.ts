@@ -9,7 +9,7 @@ import vscode = require("vscode");
 import walker = require("walker");
 import { PathUtils } from "../utils/path";
 import { Project } from "../core/project";
-import { minimatch } from "minimatch";
+import { matchesGlob } from "../utils/glob";
 import { l10n, workspace } from "vscode";
 import { RepositoryDetector } from "./repositoryDetector";
 import { AutodetectedProjectInfo } from "./autodetectedProjectInfo";
@@ -59,7 +59,7 @@ export class CustomProjectLocator {
     }
 
     private isFolderIgnored(folder) {
-        const matches = this.ignoredFolders.filter(f => minimatch(folder, f));
+        const matches = this.ignoredFolders.filter(f => matchesGlob(folder, f));
         return matches.length > 0;
     }
 

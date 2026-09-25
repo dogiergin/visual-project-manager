@@ -14,18 +14,23 @@ webpack.config.js
 **/.github/
 **/.git/**
 **/.git
-**/.gitmodules
 .devcontainer/
 .nvmrc
+api/**
+CONTRIBUTING.md
 
 # agents
 AGENTS.md
-plans/**
 
-# gh-pages
-docs/index.html
-docs/styles.css
-docs/images/project-manager-save-and-list.gif
 # development
 scripts/**
-images/screenshots/**
+
+# images: only the ones used by the extension itself (the README images are loaded from GitHub)
+images/**
+!images/screenshots/projects-page-search.png
+docs/images/**
+!docs/images/icon.png
+!docs/images/project-manager-side-bar.svg
+!docs/images/project-manager-save.png
+!docs/images/project-manager-list-sort-by-name.png
+!docs/images/vscode-project-manager-side-bar.png

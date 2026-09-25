@@ -23,8 +23,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          submodules: true
 
       # Runs a set of commands using the runners shell
       - name: Install Node.js

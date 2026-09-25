@@ -18,8 +18,11 @@ First release of **Visual Project Manager**, a fork of [Project Manager 13.1.1](
 - Sync tags with GitHub topics (two way, with confirmation)
 - Welcome header, "Continue where you left off" card and quick actions in the Projects page; clearer Side Bar buttons
 
-### Changed
-- What's New is announced with a notification instead of opening a page on startup
+### Removed
+- The What's New page of Project Manager (its release notes are kept below)
+
+### Internal
+- Smaller and faster: the `glob`, `minimatch` and `vscode-ext-codicons` dependencies are replaced by small built-in helpers (bundle 321 KB → 129 KB, package 2.3 MB → 0.3 MB)
 
 # Project Manager (original changelog)
 

@@ -9,10 +9,10 @@ import fs = require("fs");
 import os = require("os");
 import path = require("path");
 import { env, ExtensionContext, workspace } from "vscode";
-import { codicons } from "vscode-ext-codicons";
+import { codicons } from "./codicons";
 import { AutodetectedProjectList } from "../autodetect/abstractLocator";
 import { isRemotePath } from "./remote";
-import { glob } from "glob";
+import { findFolders, hasGlob } from "./glob";
 
 export const homeDir = os.homedir();
 export const HOME_PATH_VARIABLE = "$home";
@@ -206,7 +206,7 @@ export class PathUtils {
     }
 
     public static hasGlobPattern(value: string): boolean {
-        return /[*?[\]{}()!]/.test(value);
+        return hasGlob(value);
     }
 
     public static async expandWithGlobPatterns(projectsDirList: string[]): Promise<string[]> {
@@ -217,17 +217,7 @@ export class PathUtils {
 
             if (PathUtils.hasGlobPattern(expanded)) {
                 try {
-                    const matches = await glob(expanded, { nodir: false, dot: false });
-                    for (const match of matches) {
-                        try {
-                            const stat = fs.statSync(match);
-                            if (stat.isDirectory()) {
-                                resolved.push(match);
-                            }
-                        } catch {
-                            // ignore invalid entries
-                        }
-                    }
+                    resolved.push(...await findFolders(expanded));
                 } catch {
                     // ignore glob errors for this pattern
                 }

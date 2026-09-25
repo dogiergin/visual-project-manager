@@ -326,14 +326,6 @@
 				"title": "%projectManager.commands.editTags.title%"
 			},
 			{
-				"command": "projectManager.whatsNew",
-				"title": "%projectManager.commands.whatsNew.title%"
-			},
-			{
-				"command": "_projectManager.whatsNewContextMenu",
-				"title": "%projectManager.commands.whatsNewContextMenu.title%"
-			},
-			{
 				"command": "projectManager.addToFavorites",
 				"title": "%projectManager.commands.addToFavorites.title%"
 			},
@@ -518,10 +510,6 @@
 				},
 				{
 					"command": "projectManager.openSettings#sideBarMercurial",
-					"when": "false"
-				},
-				{
-					"command": "_projectManager.whatsNewContextMenu",
 					"when": "false"
 				},
 				{
@@ -784,13 +772,6 @@
 					"command": "_projectManager.syncGitHubTopics",
 					"when": "view =~ /projectsExplorer(Pinned|Favorites)/ && viewItem =~ /^ProjectNodeKind/",
 					"group": "favorites@9"
-				}
-			],
-			"extension/context": [
-				{
-					"command": "_projectManager.whatsNewContextMenu",
-					"group": "projectManager",
-					"when": "extension == emredogukanergin.visual-project-manager && extensionStatus == installed"
 				}
 			],
 			"projectManager.sideBar.favorites.title": [
@@ -1365,7 +1346,7 @@
 		"webpack": "webpack --mode development",
 		"webpack-dev": "webpack --mode development --watch",
 		"compile": "tsc -p ./",
-		"lint": "eslint -c package.json --ext .ts src vscode-whats-new",
+		"lint": "eslint -c package.json --ext .ts src",
 		"pretest": "npm run compile && npm run lint",
 		"test-compile": "tsc -p ./ && npm run webpack",
 		"just-test": "node ./out/src/test/runTest.js",
@@ -1384,6 +1365,7 @@
 		"@vscode/vsce": "^4.0.0",
 		"eslint": "^8.1.0",
 		"eslint-config-vscode-ext": "^1.1.0",
+		"glob": "^10.5.0",
 		"mocha": "^11.1.0",
 		"terser-webpack-plugin": "^5.2.4",
 		"ts-loader": "^9.2.5",
@@ -1392,9 +1374,6 @@
 		"webpack-cli": "^4.8.0"
 	},
 	"dependencies": {
-		"glob": "^10.5.0",
-		"minimatch": "^10.2.4",
-		"vscode-ext-codicons": "^1.4.0",
 		"vscode-ext-help-and-feedback-view": "^1.0.1",
 		"walker": "^1.0.7"
 	}

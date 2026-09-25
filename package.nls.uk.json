@@ -58,8 +58,6 @@
     "projectManager.commands.openFolderWelcome.title": "Відкрити папку",
     "projectManager.commands.supportProjectManager.title": "Project Manager: Підтримати Project Manager",
     "projectManager.commands.openSideBar.title": "Відкрити бічну панель",
-    "projectManager.commands.whatsNew.title": "Project Manager: Що нового",
-    "projectManager.commands.whatsNewContextMenu.title": "Що нового",
     "projectManager.configuration.title": "Project Manager",
     "projectManager.configuration.showProjectNameInStatusBar.description": "Відображати назву проєкту на панелі стану?",
     "projectManager.configuration.openInNewWindowWhenClickingInStatusBar.description": "Відкривати проєкт у новому вікні при натисканні на панель стану?",

@@ -19,8 +19,6 @@ Always reference these instructions first and fall back to additional search or 
 Bootstrap and local setup:
 
 ```bash
-git submodule init
-git submodule update
 npm install
 ```
 
@@ -75,7 +73,6 @@ src/
 ├── statusbar/            # Status bar integration
 ├── storage/              # Project storage management (projects.json)
 ├── utils/                # Utility functions (path, remote detection, URI building)
-├── whats-new/            # What's New notifications
 ├── test/                 # Test suites
 │   ├── suite/            # Test cases
 │   └── runTest.ts        # Test runner
@@ -84,7 +81,6 @@ src/
 dist/                     # Webpack bundles (extension.js)
 l10n/                     # Localization files
 out/                      # Compiled TypeScript files
-vscode-whats-new/         # Git submodule for What's New
 walkthrough/              # Getting Started walkthrough content
 ```
 
@@ -163,7 +159,6 @@ walkthrough/              # Getting Started walkthrough content
 
 ## Dependencies and External Tools
 
-- Requires `vscode-whats-new` submodule initialization.
 - No external runtime tools are required beyond standard extension toolchain.
 
 ## Troubleshooting and Known Limitations

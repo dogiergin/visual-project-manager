@@ -48,8 +48,6 @@
     "projectManager.commands.openFolderWelcome.title": "打開文件夾",
     "projectManager.commands.supportProjectManager.title": "項目管理器: 支持項目管理器",
     "projectManager.commands.openSideBar.title": "打開側邊欄",
-    "projectManager.commands.whatsNew.title": "項目管理器: 更新日志",
-    "projectManager.commands.whatsNewContextMenu.title": "更新日志",
     "projectManager.configuration.title": "項目管理器",
     "projectManager.configuration.showProjectNameInStatusBar.description": "是否應在狀態欄中顯示項目名稱？",
     "projectManager.configuration.openInNewWindowWhenClickingInStatusBar.description": "單擊狀態欄時是否應該使用新窗口打開項目？",

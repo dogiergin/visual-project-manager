@@ -58,8 +58,6 @@
     "projectManager.commands.openFolderWelcome.title": "Abrir Pasta",
     "projectManager.commands.supportProjectManager.title": "Project Manager: Suporte Project Manager",
     "projectManager.commands.openSideBar.title": "Abrir Barra Lateral",
-    "projectManager.commands.whatsNew.title": "Project Manager: Novidades",
-    "projectManager.commands.whatsNewContextMenu.title": "Novidades",
     "projectManager.configuration.title": "Project Manager",
     "projectManager.configuration.showProjectNameInStatusBar.description": "Controla se deve exibir o nome do projeto na barra de status",
     "projectManager.configuration.openInNewWindowWhenClickingInStatusBar.description": "Controla se o projeto deve ser aberto em uma Nova Janela quando clicar na barra de status",

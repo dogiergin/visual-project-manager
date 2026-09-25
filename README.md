@@ -76,7 +76,6 @@ Installing **Visual Project Manager** also installs [vscode-icons](https://githu
 ```bash
 git clone https://github.com/dogiergin/visual-project-manager.git
 cd visual-project-manager
-git submodule update --init
 npm install
 npm run build          # or: npm run watch
 npm test
@@ -446,7 +445,7 @@ Starting in v12.3, you can now organize your Projects with **Tags**.
 
 You can define your custom tags (via `projectManager.tags` setting), define multiple **tags** for each project, and filter the projects based on their **tags**. 
 
-![Side Bar](docs/images/vscode-project-manager-side-bar-tags.gif)
+![Side Bar](images/screenshots/projects-page-search.png)
 
 ## Extension API
 

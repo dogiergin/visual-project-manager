@@ -8,7 +8,7 @@ import path = require("path");
 import os = require("os");
 import * as assert from "assert";
 import { MercurialRepositoryDetector } from "../../autodetect/mercurialRepositoryDetector";
-import { codicons } from "vscode-ext-codicons";
+import { codicons } from "../../utils/codicons";
 
 suite("MercurialRepositoryDetector", () => {
     const detector = new MercurialRepositoryDetector([ ".hg" ]);

@@ -24,8 +24,6 @@ Prerequisites
 From a terminal, where you have cloned the repository, execute the following command to install the required dependencies:
 
 ```
-git submodule init
-git submodule update
 npm install
 ```
 

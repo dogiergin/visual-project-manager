@@ -6,7 +6,7 @@
 import { StatusBarAlignment, StatusBarItem, window, workspace } from "vscode";
 import { Locators } from "../autodetect/locators";
 import { ProjectStorage } from "../storage/storage";
-import { codicons } from "vscode-ext-codicons";
+import { codicons } from "../utils/codicons";
 import { isRemoteUri } from "../utils/remote";
 import { getCodiconFromUri } from "../utils/icons";
 import { Project } from "../core/project";

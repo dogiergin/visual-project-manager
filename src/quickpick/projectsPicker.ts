@@ -5,7 +5,7 @@
 
 import fs = require("fs");
 import { commands, Disposable, l10n, MessageItem, QuickInputButton, QuickPickItem, ThemeIcon, window, workspace } from "vscode";
-import { ThemeIcons } from "vscode-ext-codicons";
+import { ThemeIcons } from "../utils/codicons";
 import { CustomProjectLocator } from "../autodetect/abstractLocator";
 import { Locators } from "../autodetect/locators";
 import { Container } from "../core/container";

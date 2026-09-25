@@ -58,8 +58,6 @@
     "projectManager.commands.openFolderWelcome.title": "Qovluq aç",
     "projectManager.commands.supportProjectManager.title": "Project Manager: Project Manager-ə dəstək ol",
     "projectManager.commands.openSideBar.title": "Yan paneli aç",
-    "projectManager.commands.whatsNew.title": "Project Manager: Yeniliklər",
-    "projectManager.commands.whatsNewContextMenu.title": "Yeniliklər",
     "projectManager.configuration.title": "Project Manager",
     "projectManager.configuration.showProjectNameInStatusBar.description": "Layihənin adı Status panelində göstərilsinmi?",
     "projectManager.configuration.openInNewWindowWhenClickingInStatusBar.description": "Status panelinə klikləndikdə layihə yeni pəncərədə açılsınmı?",

@@ -7,7 +7,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { RepositoryDetector } from "./repositoryDetector";
 import { AutodetectedProjectInfo } from "./autodetectedProjectInfo";
-import { codicons } from "vscode-ext-codicons";
+import { codicons } from "../utils/codicons";
 
 
 export class VSCodeRepositoryDetector implements RepositoryDetector {

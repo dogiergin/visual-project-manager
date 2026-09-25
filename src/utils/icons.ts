@@ -5,7 +5,7 @@
 
 import path = require("path");
 import { IconPath, Uri, workspace } from "vscode";
-import { codicons } from "vscode-ext-codicons";
+import { codicons } from "./codicons";
 import { Container } from "../core/container";
 import { isRemoteUri, REMOTE_PREFIX, VIRTUAL_WORKSPACE_PREFIX } from "./remote";
 

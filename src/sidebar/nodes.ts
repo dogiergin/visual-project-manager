@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { Command, IconPath, MarkdownString, ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
-import { ThemeIcons } from "vscode-ext-codicons";
+import { ThemeIcons } from "../utils/codicons";
 import { currentIconThemeHasFolderIcon, getProjectIcon, getIconDetailsFromProjectPath } from "../utils/icons";
 import { REMOTE_PREFIX, VIRTUAL_WORKSPACE_PREFIX } from "../utils/remote";
 

@@ -6,7 +6,7 @@
 import fs = require("fs");
 import path = require("path");
 import { CustomRepositoryDetector } from "./repositoryDetector";
-import { codicons } from "vscode-ext-codicons";
+import { codicons } from "../utils/codicons";
 
 export class GitRepositoryDetector extends CustomRepositoryDetector {
     
