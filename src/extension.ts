@@ -37,6 +37,7 @@ import { ProjectNode } from "./sidebar/nodes";
 import { Project } from "./core/project";
 import { ProjectManagerApiImpl } from "./api/apiImpl";
 import { ProjectActions } from "./commands/projectActions";
+import { AutoTagger } from "./autotags/autoTagger";
 import { ProjectsHome } from "./home/projectsHome";
 import { SearchViewProvider } from "./sidebar/searchView";
 import { SidebarFilter } from "./sidebar/sidebarFilter";
@@ -64,8 +65,15 @@ export async function activate(context: vscode.ExtensionContext) {
     const providerManager: Providers = new Providers(locators, projectStorage);
     locators.setProviderManager(providerManager);
 
-    const projectActions = new ProjectActions(projectStorage, providerManager);
-    const projectsHome = new ProjectsHome(projectStorage, providerManager, projectActions);
+    const autoTagger = new AutoTagger();
+    SidebarFilter.setSuggestionProvider(project => autoTagger.getSuggestions(PathUtils.expandHomePath(project.rootPath), project.tags));
+    context.subscriptions.push(autoTagger.onDidChange(() => {
+        if (SidebarFilter.hasQuery()) {
+            providerManager.refreshStorageTreeView();
+        }
+    }));
+    const projectActions = new ProjectActions(projectStorage, providerManager, autoTagger);
+    const projectsHome = new ProjectsHome(projectStorage, providerManager, projectActions, autoTagger);
     new SearchViewProvider(projectStorage, providerManager);
     vscode.commands.executeCommand("setContext", "projectManager.sideBarFilterActive", SidebarFilter.isActive());
 

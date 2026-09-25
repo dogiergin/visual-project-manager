@@ -20,6 +20,7 @@ export class SidebarFilter {
     private static query = "";
     private static parsed: ParsedQuery = parseQuery("");
     private static readonly onDidChangeEmitter = new EventEmitter<void>();
+    private static suggestionProvider: (project: Project) => string[] = () => [];
     public static readonly onDidChange = SidebarFilter.onDidChangeEmitter.event;
 
     public static getQuery(): string {
@@ -58,9 +59,18 @@ export class SidebarFilter {
         return SidebarFilter.hasQuery() || SidebarFilter.getTags().length > 0;
     }
 
+    /** Automatic (suggested) tags are also searchable, even before they are accepted */
+    public static setSuggestionProvider(provider: (project: Project) => string[]) {
+        SidebarFilter.suggestionProvider = provider;
+    }
+
     /** Only the free text part. Tags are already handled by the existing storage queries. */
     public static matchesText(project: Project): boolean {
-        return matchesQuery(project, SidebarFilter.parsed);
+        if (!SidebarFilter.hasQuery()) {
+            return true;
+        }
+        const tags = [ ...project.tags, ...SidebarFilter.suggestionProvider(project) ];
+        return matchesQuery({ name: project.name, tags }, SidebarFilter.parsed);
     }
 
     public static matches(project: Project): boolean {

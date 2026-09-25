@@ -17,5 +17,15 @@
     "projectManager.configuration.home.pinnedProjectsLimit.description": "Projeler sayfasında gösterilecek sabitlenmiş proje sayısı (0 = tümü)",
     "projectManager.configuration.home.theme.description": "Projeler sayfasının renk teması. Yüksek Kontrast temalara her zaman uyulur.",
     "projectManager.configuration.home.theme.enumDescriptions.blackBlue": "Siyah arka plan, mavi vurgular",
-    "projectManager.configuration.home.theme.enumDescriptions.vscode": "Geçerli VS Code renk temasını kullan"
+    "projectManager.configuration.home.theme.enumDescriptions.vscode": "Geçerli VS Code renk temasını kullan",
+    "projectManager.commands.editTagDecisions.title": "Project Manager: Otomatik Etiket Kararlarını Düzenle",
+    "projectManager.commands.refreshAutoTags.title": "Project Manager: Otomatik Etiketleri Yenile",
+    "projectManager.configuration.autoTags.title": "Otomatik Etiketler",
+    "projectManager.configuration.autoTags.enabled.description": "Her projenin dosyalarına göre etiketleri otomatik öner",
+    "projectManager.configuration.autoTags.engine.description": "Otomatik etiketlerin nasıl belirleneceği. Teknoloji etiketleri (`Python`, `Jupyter` gibi) her zaman kurallardan gelir. Kategori etiketleri (`Data Analysis` gibi), çalışıyorsa yerel karar modeli çalıştırıcısı [Ollaya](https://ollaya.dev) ile belirlenir.",
+    "projectManager.configuration.autoTags.engine.enumDescriptions.auto": "Kurallar; Ollaya sunucusu çalışıyorsa kategoriler için Ollaya",
+    "projectManager.configuration.autoTags.engine.enumDescriptions.rules": "Yalnızca kurallar. Ollaya hiç çağrılmaz",
+    "projectManager.configuration.autoTags.engine.enumDescriptions.ollaya": "Kurallar ve Ollaya; Ollaya çalışmıyorsa uyar",
+    "projectManager.configuration.autoTags.ollaya.url.description": "Yerel Ollaya sunucusunun adresi",
+    "projectManager.configuration.autoTags.ollaya.model.description": "Kategoriler için kullanılacak Ollaya karar modeli"
 }

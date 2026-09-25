@@ -83,10 +83,15 @@
     "Tags: {0}": "Tags: {0}",
     "Workspace": "Workspace",
     "search: \"{0}\"": "search: \"{0}\"",
-    "Keyboard: / search · arrows move · Enter open · Ctrl+Enter new window · P pin · T tags · Esc clear": "Keyboard: / search · arrows move · Enter open · Ctrl+Enter new window · P pin · T tags · Esc clear",
     "Show": "Show",
     "Number of projects to show in {0}": "Number of projects to show in {0}",
     "All": "All",
     "Show all ({0})": "Show all ({0})",
-    "Show less": "Show less"
+    "Show less": "Show less",
+    "Keyboard: / search · arrows move · Enter open · Ctrl+Enter new window · P pin · T tags · A accept suggested tags · Esc clear": "Keyboard: / search · arrows move · Enter open · Ctrl+Enter new window · P pin · T tags · A accept suggested tags · Esc clear",
+    "Suggested tags: {0}": "Suggested tags: {0}",
+    "Accept suggested tags": "Accept suggested tags",
+    "Learn More": "Learn More",
+    "Ollaya is not running, so project categories are suggested with the fallback rules. Start the Ollaya app, or run `ollaya run laya` in a terminal.": "Ollaya is not running, so project categories are suggested with the fallback rules. Start the Ollaya app, or run `ollaya run laya` in a terminal.",
+    "Invalid tag decisions file: {0}": "Invalid tag decisions file: {0}"
 }

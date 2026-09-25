@@ -15,6 +15,7 @@ import { PathUtils } from "../utils/path";
 import { isRemotePath } from "../utils/remote";
 import { getRecentLocalProjects } from "./recentProjects";
 import { buildWebviewHtml } from "./webviewHtml";
+import { AutoTagger } from "../autotags/autoTagger";
 
 export enum ShowHomeOnStartup {
     emptyWindow = "emptyWindow",
@@ -27,6 +28,7 @@ export interface HomeProject {
     name: string;
     displayPath: string;
     tags: string[];
+    suggestedTags: string[]; // automatic tags (rules / Ollaya) not accepted yet
     pinned: boolean;
     saved: boolean;
     kind: "folder" | "workspace" | "remote";
@@ -56,6 +58,7 @@ type HomeMessage =
     | { type: "open"; rootPath: string; newWindow: boolean }
     | { type: "setPinned"; rootPath: string; pinned: boolean }
     | { type: "editTags"; rootPath: string }
+    | { type: "acceptSuggestions"; rootPath: string }
     | { type: "setLimit"; section: HomeSection; limit: number }
     | { type: "command"; command: "openFolder" | "listProjects" | "saveProject" | "openSettings" };
 
@@ -69,11 +72,13 @@ export class ProjectsHome {
     constructor(
         private projectStorage: ProjectStorage,
         private providers: Providers,
-        private actions: ProjectActions
+        private actions: ProjectActions,
+        private autoTagger: AutoTagger
     ) {
         Container.context.subscriptions.push(
             vscode.commands.registerCommand("projectManager.openHome", () => this.show()),
             providers.onDidChangeStorage(() => this.refresh()),
+            autoTagger.onDidChange(() => this.refresh()),
             vscode.workspace.onDidChangeConfiguration(cfg => {
                 if (cfg.affectsConfiguration("projectManager.home")) {
                     this.refresh();
@@ -144,6 +149,10 @@ export class ProjectsHome {
                 await this.actions.editTags(message.rootPath);
                 break;
 
+            case "acceptSuggestions":
+                this.actions.acceptSuggestions(message.rootPath);
+                break;
+
             case "setLimit":
                 if (LIMIT_SETTINGS[message.section] && [ 0, 3, 6, 9, 12 ].includes(message.limit)) {
                     await vscode.workspace.getConfiguration("projectManager")
@@ -181,6 +190,7 @@ export class ProjectsHome {
                 name: name ?? path.basename(expanded, ".code-workspace"),
                 displayPath: expanded,
                 tags,
+                suggestedTags: this.autoTagger.getSuggestions(expanded, tags),
                 pinned,
                 saved: isSaved,
                 kind: isRemotePath(expanded) ? "remote" : path.extname(expanded) === ".code-workspace" ? "workspace" : "folder"
@@ -203,7 +213,8 @@ export class ProjectsHome {
             }
         }
 
-        const tags = this.projectStorage.getAvailableTags().sort((a, b) => a.localeCompare(b));
+        const tags = [ ...new Set([ ...this.projectStorage.getAvailableTags(), ...all.flatMap(project => project.suggestedTags) ]) ]
+            .sort((a, b) => a.localeCompare(b));
         const limits = {
             pinned: config.get<number>(LIMIT_SETTINGS.pinned, DEFAULT_LIMIT),
             recent: config.get<number>(LIMIT_SETTINGS.recent, DEFAULT_LIMIT)
@@ -256,13 +267,15 @@ export class ProjectsHome {
             settings: l10n.t("Settings"),
             pinnedAnnouncement: l10n.t("{0} pinned"),
             unpinnedAnnouncement: l10n.t("{0} unpinned"),
-            keyboardHelp: l10n.t("Keyboard: / search · arrows move · Enter open · Ctrl+Enter new window · P pin · T tags · Esc clear"),
+            keyboardHelp: l10n.t("Keyboard: / search · arrows move · Enter open · Ctrl+Enter new window · P pin · T tags · A accept suggested tags · Esc clear"),
             show: l10n.t("Show"),
             showCount: l10n.t("Number of projects to show in {0}"),
             all: l10n.t("All"),
             showMore: l10n.t("Show all ({0})"),
             showLess: l10n.t("Show less"),
             pinnedBadge: l10n.t("Pinned"),
+            suggestedTags: l10n.t("Suggested tags: {0}"),
+            acceptSuggestions: l10n.t("Accept suggested tags"),
             credits: l10n.t("Based on Project Manager by Alessandro Fragnani")
         };
     }

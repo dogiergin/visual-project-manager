@@ -15,13 +15,14 @@ import { Providers } from "../sidebar/providers";
 import { ProjectStorage } from "../storage/storage";
 import { PathUtils } from "../utils/path";
 import { buildProjectUri } from "../utils/uri";
+import { AutoTagger } from "../autotags/autoTagger";
 
 /**
  * Actions shared by the Projects Home and the Side Bar
  */
 export class ProjectActions {
 
-    constructor(private projectStorage: ProjectStorage, private providers: Providers) { }
+    constructor(private projectStorage: ProjectStorage, private providers: Providers, private autoTagger: AutoTagger) { }
 
     public findSavedProject(rootPath: string): Project | undefined {
         return this.projectStorage.existsWithRootPath(rootPath);
@@ -59,8 +60,10 @@ export class ProjectActions {
 
     public async editTags(rootPath: string): Promise<void> {
         const project = this.ensureSavedProject(rootPath);
+        // suggested tags come preselected, so accepting them is a single Enter
+        const suggestions = this.autoTagger.getSuggestions(PathUtils.expandHomePath(project.rootPath), project.tags);
 
-        const picked = await pickTags(this.projectStorage, project.tags, {
+        const picked = await pickTags(this.projectStorage, [ ...project.tags, ...suggestions ], {
             useDefaultTags: true,
             useNoTagsDefined: false,
             allowAddingNewTags: true
@@ -70,7 +73,20 @@ export class ProjectActions {
             return;
         }
 
+        await this.autoTagger.reject(PathUtils.expandHomePath(project.rootPath), suggestions.filter(tag => !picked.includes(tag)));
         this.projectStorage.editTags(project.name, picked);
+        this.projectStorage.save();
+        this.providers.refreshStorageTreeView();
+    }
+
+    /** Adds the suggested (automatic) tags to the project tags */
+    public acceptSuggestions(rootPath: string): void {
+        const project = this.ensureSavedProject(rootPath);
+        const suggestions = this.autoTagger.getSuggestions(PathUtils.expandHomePath(project.rootPath), project.tags);
+        if (suggestions.length === 0) {
+            return;
+        }
+        this.projectStorage.editTags(project.name, [ ...project.tags, ...suggestions ]);
         this.projectStorage.save();
         this.providers.refreshStorageTreeView();
     }

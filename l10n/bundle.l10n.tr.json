@@ -44,10 +44,15 @@
     "Add new tags": "Yeni etiket ekle",
     "Open Project": "Projeyi Aç",
     "Do you want to open the project in the active window?": "Proje etkin pencerede açılsın mı?",
-    "Keyboard: / search · arrows move · Enter open · Ctrl+Enter new window · P pin · T tags · Esc clear": "Klavye: / ara · oklar gezin · Enter aç · Ctrl+Enter yeni pencere · P sabitle · T etiketler · Esc temizle",
     "Show": "Göster",
     "Number of projects to show in {0}": "{0} bölümünde gösterilecek proje sayısı",
     "All": "Tümü",
     "Show all ({0})": "Tümünü göster ({0})",
-    "Show less": "Daha az göster"
+    "Show less": "Daha az göster",
+    "Keyboard: / search · arrows move · Enter open · Ctrl+Enter new window · P pin · T tags · A accept suggested tags · Esc clear": "Klavye: / ara · oklar gezin · Enter aç · Ctrl+Enter yeni pencere · P sabitle · T etiketler · A önerilen etiketleri kabul et · Esc temizle",
+    "Suggested tags: {0}": "Önerilen etiketler: {0}",
+    "Accept suggested tags": "Önerilen etiketleri kabul et",
+    "Learn More": "Daha Fazla Bilgi",
+    "Ollaya is not running, so project categories are suggested with the fallback rules. Start the Ollaya app, or run `ollaya run laya` in a terminal.": "Ollaya çalışmıyor, bu yüzden proje kategorileri yedek kurallarla öneriliyor. Ollaya uygulamasını başlatın ya da bir terminalde `ollaya run laya` çalıştırın.",
+    "Invalid tag decisions file: {0}": "Geçersiz etiket kararları dosyası: {0}"
 }

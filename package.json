@@ -382,6 +382,14 @@
 				"command": "_projectManager.unpinProject",
 				"title": "%projectManager.commands.unpinProject.title%",
 				"icon": "$(pinned)"
+			},
+			{
+				"command": "projectManager.editTagDecisions",
+				"title": "%projectManager.commands.editTagDecisions.title%"
+			},
+			{
+				"command": "projectManager.refreshAutoTags",
+				"title": "%projectManager.commands.refreshAutoTags.title%"
 			}
 		],
 		"menus": {
@@ -1191,6 +1199,42 @@
 						"type": "integer",
 						"default": 4,
 						"description": "%projectManager.configuration.any.maxDepthRecursion.description%"
+					}
+				}
+			},
+			{
+				"id": "projectManager-autoTags",
+				"title": "%projectManager.configuration.autoTags.title%",
+				"properties": {
+					"projectManager.autoTags.enabled": {
+						"type": "boolean",
+						"default": true,
+						"description": "%projectManager.configuration.autoTags.enabled.description%"
+					},
+					"projectManager.autoTags.engine": {
+						"type": "string",
+						"default": "auto",
+						"enum": [
+							"auto",
+							"rules",
+							"ollaya"
+						],
+						"enumDescriptions": [
+							"%projectManager.configuration.autoTags.engine.enumDescriptions.auto%",
+							"%projectManager.configuration.autoTags.engine.enumDescriptions.rules%",
+							"%projectManager.configuration.autoTags.engine.enumDescriptions.ollaya%"
+						],
+						"markdownDescription": "%projectManager.configuration.autoTags.engine.description%"
+					},
+					"projectManager.autoTags.ollaya.url": {
+						"type": "string",
+						"default": "http://localhost:11435",
+						"description": "%projectManager.configuration.autoTags.ollaya.url.description%"
+					},
+					"projectManager.autoTags.ollaya.model": {
+						"type": "string",
+						"default": "laya",
+						"description": "%projectManager.configuration.autoTags.ollaya.model.description%"
 					}
 				}
 			}

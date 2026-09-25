@@ -28,6 +28,16 @@ A **Projects page** that opens instead of the classic Welcome page, with **pinne
 * Pin/unpin, open in a new window and edit tags right from each row
 * Command `Project Manager: Open Projects Page` (`Ctrl+Alt+H` / `Cmd+Alt+H`)
 
+### Automatic tags
+Nobody wants to tag dozens of projects by hand, so tags are **suggested automatically** from the files of each project (shown as ✨ _suggested_ until you accept them with the `A` key, the ✨ button, or the Edit Tags picker):
+
+* **Technology tags** come from exact rules: `*.ipynb` → `Jupyter`, `*.py` / `requirements.txt` → `Python`, `pubspec.yaml` → `Flutter`, `pandas` dependency or import → `Pandas`...
+* **Category tags** (`Data Analysis`, `Machine Learning`, `Mobile Development`, `Web Development`, `Software Development`, `DevOps`, `Game Development`) are decided by [Ollaya](https://ollaya.dev), a local decision model runtime, when it is running. Each category is a yes/no question answered with a probability; the ones above the threshold are suggested. Without Ollaya, simple fallback rules are used.
+* Only a small summary is used (folder name, file type counts, top level files, dependencies and the start of the README). Everything runs **locally**: nothing leaves your computer.
+* Edit the rules and categories with `Project Manager: Edit Automatic Tag Decisions`. Settings: `projectManager.autoTags.enabled`, `projectManager.autoTags.engine` (`auto`, `rules`, `ollaya`), `projectManager.autoTags.ollaya.url`, `projectManager.autoTags.ollaya.model`
+
+To use Ollaya, install it from [ollaya.dev](https://ollaya.dev) and keep it running (default address `http://localhost:11435`).
+
 ### Side Bar
 * A new **Pinned** view at the top of the Side Bar
 * A new **Search** view, which filters the _Pinned_ and _Favorites_ views by name, `#tag` and tag chips
@@ -92,6 +102,7 @@ npm test
   </table>
 
 * [vscode-icons](https://github.com/vscode-icons/vscode-icons) by the vscode-icons team - MIT
+* [Ollaya](https://ollaya.dev) - optional local decision runtime used for the category tags (Apache-2.0, not bundled)
 
 # Project Manager features
 

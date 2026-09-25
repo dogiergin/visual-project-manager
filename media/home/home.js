@@ -141,8 +141,19 @@
     function filtered() {
         const parsed = parseQuery(state.query);
         return state.data.all
-            .filter(project => matchesQuery(project, parsed) && matchesAnyTag(project, state.selectedTags))
+            .filter(project => {
+                const searchable = { name: project.name, tags: allTags(project) };
+                return matchesQuery(searchable, parsed) && matchesAnyTag(searchable, state.selectedTags);
+            })
             .sort((a, b) => Number(b.pinned) - Number(a.pinned) || a.name.localeCompare(b.name));
+    }
+
+    function suggested(project) {
+        return Array.isArray(project.suggestedTags) ? project.suggestedTags : [];
+    }
+
+    function allTags(project) {
+        return [ ...project.tags, ...suggested(project) ];
     }
 
     function renderChips() {
@@ -245,6 +256,7 @@
         const key = project.rootPath;
         const description = [
             project.tags.length > 0 ? format(t.tags, project.tags.join(", ")) : undefined,
+            suggested(project).length > 0 ? format(t.suggestedTags, suggested(project).join(", ")) : undefined,
             project.kind === "workspace" ? t.workspace : undefined,
             project.pinned ? t.pinnedBadge : undefined,
             project.displayPath
@@ -257,7 +269,7 @@
             "data-nav": "tile",
             title: `${project.name}\n${project.displayPath}`,
             "aria-label": `${project.name}, ${description}`,
-            "aria-keyshortcuts": "Enter Control+Enter P T",
+            "aria-keyshortcuts": "Enter Control+Enter P T A",
             onclick: event => open(project, event.ctrlKey || event.metaKey),
             onkeydown: event => onTileKeyDown(event, project),
             oncontextmenu: event => {
@@ -267,7 +279,10 @@
         }, [
             el("span", { class: "folder-wrap", html: folder(project.kind) }),
             el("span", { class: "name", text: project.name }),
-            project.tags.length > 0 ? el("span", { class: "tags", "aria-hidden": "true", text: project.tags.map(tag => `#${tag}`).join(" ") }) : undefined
+            allTags(project).length > 0 ? el("span", { class: "tags", "aria-hidden": "true" }, [
+                ...project.tags.map(tag => el("span", { class: "tag-manual", text: `#${tag}` })),
+                ...suggested(project).map(tag => el("span", { class: "tag-suggested", title: t.suggestedTags.replace("{0}", tag), text: `✨${tag}` }))
+            ]) : undefined
         ]);
 
         const pinBadge = project.pinned ? el("span", { class: "pin-badge", "aria-hidden": "true", html: icon("pinFilled") }) : undefined;
@@ -275,7 +290,10 @@
         const actions = el("div", { class: "tile-actions" }, [
             actionButton(key, "newWindow", "newWindow", t.openInNewWindow, () => open(project, true)),
             actionButton(key, "pin", project.pinned ? "pinFilled" : "pin", project.pinned ? t.unpin : t.pin, () => togglePin(project)),
-            actionButton(key, "tags", "tag", t.editTags, () => post({ type: "editTags", rootPath: project.rootPath }))
+            actionButton(key, "tags", "tag", t.editTags, () => post({ type: "editTags", rootPath: project.rootPath })),
+            suggested(project).length > 0
+                ? actionButton(key, "accept", "sparkle", t.acceptSuggestions, () => acceptSuggestions(project))
+                : undefined
         ]);
 
         return el("li", { class: project.pinned ? "tile pinned" : "tile" }, [ main, pinBadge, actions ]);
@@ -317,6 +335,14 @@
 
     function open(project, newWindow) {
         post({ type: "open", rootPath: project.rootPath, newWindow });
+    }
+
+    function acceptSuggestions(project) {
+        if (suggested(project).length === 0) {
+            return;
+        }
+        live.textContent = format(t.suggestedTags, suggested(project).join(", "));
+        post({ type: "acceptSuggestions", rootPath: project.rootPath });
     }
 
     function togglePin(project) {
@@ -432,6 +458,11 @@
             case "P":
                 event.preventDefault();
                 togglePin(project);
+                break;
+            case "a":
+            case "A":
+                event.preventDefault();
+                acceptSuggestions(project);
                 break;
             case "t":
             case "T":

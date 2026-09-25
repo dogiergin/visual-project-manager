@@ -37,8 +37,8 @@ if (!browser) {
 
 // ---------------------------------------------------------------- sample data
 
-const project = (name, rootPath, tags, pinned, kind = "folder") =>
-    ({ rootPath, name, displayPath: rootPath, tags, pinned, saved: true, kind });
+const project = (name, rootPath, tags, pinned, kind = "folder", suggestedTags = []) =>
+    ({ rootPath, name, displayPath: rootPath, tags, suggestedTags, pinned, saved: true, kind });
 
 const pinned = [
     project("AI Engineer Program", "D:\\Visual-Studio-Code\\AI Engineer Program", [ "AI" ], true),
@@ -47,8 +47,8 @@ const pinned = [
 ];
 const recent = [
     project("ai-vs-human-dashboard", "D:\\Visual-Studio-Code\\ai-vs-human-dashboard", [ "AI", "Data" ], false),
-    project("Data-Analysis", "D:\\Visual-Studio-Code\\Data-Analysis", [ "Data", "Python" ], false),
-    project("Kaggle-proje", "D:\\Visual-Studio-Code\\Kaggle-proje", [ "Data" ], false),
+    project("Data-Analysis", "D:\\Visual-Studio-Code\\Data-Analysis", [], false, "folder", [ "Data Analysis", "Jupyter" ]),
+    project("Kaggle-proje", "D:\\Visual-Studio-Code\\Kaggle-proje", [], false, "folder", [ "Machine Learning", "Python" ]),
     project("shop", "D:\\work\\shop.code-workspace", [ "Web" ], false, "workspace"),
     project("notes", "C:\\Users\\me\\notes", [], false),
     project("portfolio", "C:\\Users\\me\\portfolio", [ "Web" ], false),
@@ -68,9 +68,10 @@ const strings = {
     open: "Open {0}", openInNewWindow: "Open in New Window", pin: "Pin", unpin: "Unpin", editTags: "Edit Tags",
     tags: "Tags: {0}", workspace: "Workspace", openFolder: "Open Folder...", listProjects: "All Projects...",
     settings: "Settings", pinnedAnnouncement: "{0} pinned", unpinnedAnnouncement: "{0} unpinned",
-    keyboardHelp: "Keyboard: / search · arrows move · Enter open · Ctrl+Enter new window · P pin · T tags · Esc clear",
+    keyboardHelp: "Keyboard: / search · arrows move · Enter open · Ctrl+Enter new window · P pin · T tags · A accept suggested tags · Esc clear",
     show: "Show", showCount: "Number of projects to show in {0}", all: "All", showMore: "Show all ({0})",
     showLess: "Show less", pinnedBadge: "Pinned",
+    suggestedTags: "Suggested tags: {0}", acceptSuggestions: "Accept suggested tags",
     credits: "Based on Project Manager by Alessandro Fragnani"
 };
 
