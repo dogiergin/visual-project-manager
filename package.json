@@ -1265,7 +1265,8 @@
 		"pretest": "npm run compile && npm run lint",
 		"test-compile": "tsc -p ./ && npm run webpack",
 		"just-test": "node ./out/src/test/runTest.js",
-		"test": "npm run test-compile && npm run just-test"
+		"test": "npm run test-compile && npm run just-test",
+		"screenshots": "node ./scripts/screenshots.js"
 	},
 	"devDependencies": {
 		"@types/mocha": "^10.0.0",

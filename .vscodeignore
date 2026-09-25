@@ -26,3 +26,6 @@ plans/**
 docs/index.html
 docs/styles.css
 docs/images/project-manager-save-and-list.gif
+# development
+scripts/**
+images/screenshots/**
