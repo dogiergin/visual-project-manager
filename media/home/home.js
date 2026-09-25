@@ -14,9 +14,21 @@
 
     const LIMIT_OPTIONS = [ 3, 6, 9, 0 ]; // 0 = all
 
+    const DEFAULT_DATA = { pinned: [], recent: [], all: [], tags: [], limits: { pinned: 6, recent: 6 }, theme: "blackBlue" };
+
+    // tolerate missing fields (e.g. an older extension host still running after an update, until the window is reloaded)
+    function normalizeData(data) {
+        const merged = { ...DEFAULT_DATA, ...(data || {}) };
+        merged.limits = { ...DEFAULT_DATA.limits, ...(merged.limits || {}) };
+        for (const key of [ "pinned", "recent", "all", "tags" ]) {
+            merged[ key ] = Array.isArray(merged[ key ]) ? merged[ key ] : [];
+        }
+        return merged;
+    }
+
     const saved = vscode.getState() || {};
     const state = {
-        data: { pinned: [], recent: [], all: [], tags: [], limits: { pinned: 6, recent: 6 }, theme: "blackBlue" },
+        data: normalizeData(),
         loaded: false,
         query: saved.query || "",
         selectedTags: saved.selectedTags || [],
@@ -25,7 +37,7 @@
     };
 
     function format(text, ...args) {
-        return text.replace(/\{(\d+)\}/g, (match, index) => args[index] !== undefined ? String(args[index]) : match);
+        return (text || "").replace(/\{(\d+)\}/g, (match, index) => args[index] !== undefined ? String(args[index]) : match);
     }
 
     function el(tag, attributes, children) {
@@ -519,7 +531,7 @@
     window.addEventListener("message", event => {
         const message = event.data;
         if (message.type === "data") {
-            state.data = message.data;
+            state.data = normalizeData(message.data);
             state.loaded = true;
             render();
         }
