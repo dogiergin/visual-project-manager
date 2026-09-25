@@ -16,6 +16,7 @@ import { isRemotePath } from "../utils/remote";
 import { getRecentLocalProjects } from "./recentProjects";
 import { buildWebviewHtml } from "./webviewHtml";
 import { AutoTagger } from "../autotags/autoTagger";
+import { findGitHubRepository } from "../github/githubTopicsSync";
 
 export enum ShowHomeOnStartup {
     emptyWindow = "emptyWindow",
@@ -29,6 +30,7 @@ export interface HomeProject {
     displayPath: string;
     tags: string[];
     suggestedTags: string[]; // automatic tags (rules / Ollaya) not accepted yet
+    github?: string;         // "owner/repo" when the project has a GitHub remote
     pinned: boolean;
     saved: boolean;
     kind: "folder" | "workspace" | "remote";
@@ -59,11 +61,17 @@ type HomeMessage =
     | { type: "setPinned"; rootPath: string; pinned: boolean }
     | { type: "editTags"; rootPath: string }
     | { type: "acceptSuggestions"; rootPath: string }
+    | { type: "syncGitHub"; rootPath: string }
     | { type: "setLimit"; section: HomeSection; limit: number }
     | { type: "command"; command: "openFolder" | "cloneRepository" | "listProjects" | "saveProject" | "openSettings" };
 
 const VIEW_TYPE = "projectManager.home";
 const ASKED_ABOUT_STARTUP_EDITOR_KEY = "home.askedAboutStartupEditor";
+
+function gitHubName(rootPath: string): string | undefined {
+    const repository = isRemotePath(rootPath) ? undefined : findGitHubRepository(rootPath);
+    return repository ? `${repository.owner}/${repository.name}` : undefined;
+}
 
 export class ProjectsHome {
 
@@ -149,6 +157,10 @@ export class ProjectsHome {
                 await this.actions.editTags(message.rootPath);
                 break;
 
+            case "syncGitHub":
+                await this.actions.syncGitHubTopics(message.rootPath);
+                break;
+
             case "acceptSuggestions":
                 this.actions.acceptSuggestions(message.rootPath);
                 break;
@@ -194,6 +206,7 @@ export class ProjectsHome {
                 displayPath: expanded,
                 tags,
                 suggestedTags: this.autoTagger.getSuggestions(expanded, tags),
+                github: gitHubName(expanded),
                 pinned,
                 saved: isSaved,
                 kind: isRemotePath(expanded) ? "remote" : path.extname(expanded) === ".code-workspace" ? "workspace" : "folder"
@@ -270,7 +283,7 @@ export class ProjectsHome {
             settings: l10n.t("Settings"),
             pinnedAnnouncement: l10n.t("{0} pinned"),
             unpinnedAnnouncement: l10n.t("{0} unpinned"),
-            keyboardHelp: l10n.t("Keyboard: / search · arrows move · Enter open · Ctrl+Enter new window · P pin · T tags · A accept suggested tags · Esc clear"),
+            keyboardHelp: l10n.t("Keyboard: / search · arrows move · Enter open · Ctrl+Enter new window · P pin · T tags · A accept suggested tags · G GitHub topics · Esc clear"),
             show: l10n.t("Show"),
             showCount: l10n.t("Number of projects to show in {0}"),
             all: l10n.t("All"),
@@ -292,6 +305,7 @@ export class ProjectsHome {
             openProject: l10n.t("Open"),
             suggestedTags: l10n.t("Suggested tags: {0}"),
             acceptSuggestions: l10n.t("Accept suggested tags"),
+            syncGitHub: l10n.t("Sync tags with GitHub topics ({0})"),
             credits: l10n.t("Based on Project Manager by Alessandro Fragnani")
         };
     }

@@ -36,6 +36,13 @@ Nobody wants to tag dozens of projects by hand, so tags are **suggested automati
 * Only a small summary is used (folder name, file type counts, top level files, dependencies and the start of the README). Everything runs **locally**: nothing leaves your computer.
 * Edit the rules and categories with `Project Manager: Edit Automatic Tag Decisions`. Settings: `projectManager.autoTags.enabled`, `projectManager.autoTags.engine` (`auto`, `rules`, `ollaya`), `projectManager.autoTags.ollaya.url`, `projectManager.autoTags.ollaya.model`
 
+### Tags on GitHub
+Tags can be shared with everybody through **GitHub topics** (the tags displayed on a repository page, and used by the GitHub search):
+
+* Use `Sync Tags with GitHub Topics` (the ☁ button or the `G` key in the Projects page, the project context menu in the Side Bar, or the Command Palette for the current folder)
+* The project tags become topics (`Data Analysis` → `data-analysis`, `C#` → `csharp`), and the repository topics become project tags. Nothing is ever removed
+* You always confirm what will be added before anything is written to GitHub. It uses the VS Code GitHub sign in, and works for projects whose `origin` remote is on GitHub
+
 To use Ollaya, install it from [ollaya.dev](https://ollaya.dev) and keep it running (default address `http://localhost:11435`).
 
 ### Side Bar

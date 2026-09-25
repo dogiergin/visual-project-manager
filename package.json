@@ -394,6 +394,16 @@
 			{
 				"command": "projectManager.refreshAutoTags",
 				"title": "%projectManager.commands.refreshAutoTags.title%"
+			},
+			{
+				"command": "projectManager.syncGitHubTopics",
+				"title": "%projectManager.commands.syncGitHubTopics.title%",
+				"icon": "$(cloud-upload)"
+			},
+			{
+				"command": "_projectManager.syncGitHubTopics",
+				"title": "%projectManager.commands.syncGitHubTopics#sideBar.title%",
+				"icon": "$(cloud-upload)"
 			}
 		],
 		"menus": {
@@ -541,6 +551,10 @@
 				{
 					"command": "projectManager.clearSideBarFilter",
 					"when": "projectManager.sideBarFilterActive"
+				},
+				{
+					"command": "_projectManager.syncGitHubTopics",
+					"when": "false"
 				}
 			],
 			"view/title": [
@@ -765,6 +779,11 @@
 					"command": "_projectManager.unpinProject",
 					"when": "view =~ /projectsExplorer(Pinned|Favorites)/ && viewItem == ProjectNodeKind.pinned",
 					"group": "favorites@0"
+				},
+				{
+					"command": "_projectManager.syncGitHubTopics",
+					"when": "view =~ /projectsExplorer(Pinned|Favorites)/ && viewItem =~ /^ProjectNodeKind/",
+					"group": "favorites@9"
 				}
 			],
 			"extension/context": [

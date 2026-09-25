@@ -147,5 +147,7 @@
     "projectManager.configuration.autoTags.engine.enumDescriptions.rules": "Rules only. Ollaya is never called",
     "projectManager.configuration.autoTags.engine.enumDescriptions.ollaya": "Rules plus Ollaya, and warn when Ollaya is not running",
     "projectManager.configuration.autoTags.ollaya.url.description": "Address of the local Ollaya server",
-    "projectManager.configuration.autoTags.ollaya.model.description": "Ollaya decision model used for the categories"
+    "projectManager.configuration.autoTags.ollaya.model.description": "Ollaya decision model used for the categories",
+    "projectManager.commands.syncGitHubTopics.title": "Project Manager: Sync Tags with GitHub Topics",
+    "projectManager.commands.syncGitHubTopics#sideBar.title": "Sync Tags with GitHub Topics"
 }

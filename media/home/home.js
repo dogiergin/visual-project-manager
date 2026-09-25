@@ -344,7 +344,7 @@
             "data-nav": "tile",
             title: `${project.name}\n${project.displayPath}`,
             "aria-label": `${project.name}, ${description}`,
-            "aria-keyshortcuts": "Enter Control+Enter P T A",
+            "aria-keyshortcuts": "Enter Control+Enter P T A G",
             onclick: event => open(project, event.ctrlKey || event.metaKey),
             onkeydown: event => onTileKeyDown(event, project),
             oncontextmenu: event => {
@@ -368,6 +368,9 @@
             actionButton(key, "tags", "tag", t.editTags, () => post({ type: "editTags", rootPath: project.rootPath })),
             suggested(project).length > 0
                 ? actionButton(key, "accept", "sparkle", t.acceptSuggestions, () => acceptSuggestions(project))
+                : undefined,
+            project.github
+                ? actionButton(key, "github", "cloudSync", format(t.syncGitHub, project.github), () => syncGitHub(project))
                 : undefined
         ]);
 
@@ -410,6 +413,12 @@
 
     function open(project, newWindow) {
         post({ type: "open", rootPath: project.rootPath, newWindow });
+    }
+
+    function syncGitHub(project) {
+        if (project.github) {
+            post({ type: "syncGitHub", rootPath: project.rootPath });
+        }
     }
 
     function acceptSuggestions(project) {
@@ -533,6 +542,11 @@
             case "P":
                 event.preventDefault();
                 togglePin(project);
+                break;
+            case "g":
+            case "G":
+                event.preventDefault();
+                syncGitHub(project);
                 break;
             case "a":
             case "A":

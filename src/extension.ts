@@ -145,6 +145,15 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("_projectManager.toggleProjectEnabled", (node) => toggleProjectEnabled(node));
     vscode.commands.registerCommand("_projectManager.pinProject", (node: ProjectNode) => projectActions.setPinned(node.command.arguments[0], true));
     vscode.commands.registerCommand("_projectManager.unpinProject", (node: ProjectNode) => projectActions.setPinned(node.command.arguments[0], false));
+    vscode.commands.registerCommand("_projectManager.syncGitHubTopics", (node: ProjectNode) => projectActions.syncGitHubTopics(node.command.arguments[0]));
+    vscode.commands.registerCommand("projectManager.syncGitHubTopics", () => {
+        const folder = vscode.workspace.workspaceFile ?? vscode.workspace.workspaceFolders?.[0]?.uri;
+        if (!folder || folder.scheme !== "file") {
+            vscode.window.showWarningMessage(l10n.t("Open a local project folder first."));
+            return;
+        }
+        return projectActions.syncGitHubTopics(folder.fsPath);
+    });
 
     const viewAsList = Container.context.globalState.get<boolean>("viewAsList", true);
     vscode.commands.executeCommand("setContext", "projectManager.viewAsList", viewAsList);

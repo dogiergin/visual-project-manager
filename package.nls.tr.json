@@ -35,5 +35,7 @@
     "projectManager.commands.listFavoriteProjects#sideBarFavorites.title": "Favori Proje Bul...",
     "projectManager.commands.filterProjectsByTag#sideBar.title": "Etikete Göre Filtrele...",
     "projectManager.commands.openSettings#sideBarFavorites.title": "Ayarlar",
-    "projectManager.submenus.viewAndSort#sideBarFavorites.title": "Görünüm ve Sıralama"
+    "projectManager.submenus.viewAndSort#sideBarFavorites.title": "Görünüm ve Sıralama",
+    "projectManager.commands.syncGitHubTopics.title": "Project Manager: Etiketleri GitHub Konularıyla Eşitle",
+    "projectManager.commands.syncGitHubTopics#sideBar.title": "Etiketleri GitHub Konularıyla Eşitle"
 }

@@ -16,6 +16,7 @@ import { ProjectStorage } from "../storage/storage";
 import { PathUtils } from "../utils/path";
 import { buildProjectUri } from "../utils/uri";
 import { AutoTagger } from "../autotags/autoTagger";
+import { syncTagsWithGitHubTopics } from "../github/githubTopicsSync";
 
 /**
  * Actions shared by the Projects Home and the Side Bar
@@ -87,6 +88,18 @@ export class ProjectActions {
             return;
         }
         this.projectStorage.editTags(project.name, [ ...project.tags, ...suggestions ]);
+        this.projectStorage.save();
+        this.providers.refreshStorageTreeView();
+    }
+
+    /** Publishes the project tags as GitHub topics, and imports the topics as tags (after a confirmation) */
+    public async syncGitHubTopics(rootPath: string): Promise<void> {
+        const project = this.ensureSavedProject(rootPath);
+        const added = await syncTagsWithGitHubTopics(project.name, PathUtils.expandHomePath(project.rootPath), project.tags);
+        if (!added || added.length === 0) {
+            return;
+        }
+        this.projectStorage.editTags(project.name, [ ...project.tags, ...added ]);
         this.projectStorage.save();
         this.providers.refreshStorageTreeView();
     }
