@@ -18,7 +18,8 @@
 		"vscode": "^1.78.0"
 	},
 	"categories": [
-		"Other"
+		"Other",
+		"Themes"
 	],
 	"keywords": [
 		"git",
@@ -975,10 +976,54 @@
 					},
 					"projectManager.home.recentProjectsLimit": {
 						"type": "number",
-						"default": 10,
-						"minimum": 1,
-						"maximum": 50,
+						"default": 6,
+						"enum": [
+							3,
+							6,
+							9,
+							12,
+							0
+						],
+						"enumItemLabels": [
+							"3",
+							"6",
+							"9",
+							"12",
+							"All"
+						],
 						"description": "%projectManager.configuration.home.recentProjectsLimit.description%"
+					},
+					"projectManager.home.pinnedProjectsLimit": {
+						"type": "number",
+						"default": 6,
+						"enum": [
+							3,
+							6,
+							9,
+							12,
+							0
+						],
+						"enumItemLabels": [
+							"3",
+							"6",
+							"9",
+							"12",
+							"All"
+						],
+						"description": "%projectManager.configuration.home.pinnedProjectsLimit.description%"
+					},
+					"projectManager.home.theme": {
+						"type": "string",
+						"default": "blackBlue",
+						"enum": [
+							"blackBlue",
+							"vscode"
+						],
+						"enumDescriptions": [
+							"%projectManager.configuration.home.theme.enumDescriptions.blackBlue%",
+							"%projectManager.configuration.home.theme.enumDescriptions.vscode%"
+						],
+						"description": "%projectManager.configuration.home.theme.description%"
 					}
 				}
 			},
@@ -1232,7 +1277,14 @@
 		],
 		"configurationDefaults": {
 			"workbench.startupEditor": "none"
-		}
+		},
+		"themes": [
+			{
+				"label": "Visual Project Manager Black & Blue",
+				"uiTheme": "vs-dark",
+				"path": "./themes/visual-project-manager-black-blue-color-theme.json"
+			}
+		]
 	},
 	"eslintConfig": {
 		"extends": [

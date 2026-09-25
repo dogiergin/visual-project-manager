@@ -3,22 +3,25 @@
 *  Licensed under the GPLv3 License. See License.md in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-// Projects Home: pinned + recent local projects, search by name or #tag, tag chips.
+// Projects Home: pinned + recent local projects as large folder tiles, search by name or #tag, tag chips.
 (function () {
     "use strict";
 
     const vscode = acquireVsCodeApi();
     const t = JSON.parse(document.getElementById("strings").textContent);
-    const { icon } = window.Icons;
+    const { icon, folder } = window.Icons;
     const { parseQuery, isEmptyQuery, matchesQuery, matchesAnyTag } = window.ProjectQuery;
+
+    const LIMIT_OPTIONS = [ 3, 6, 9, 0 ]; // 0 = all
 
     const saved = vscode.getState() || {};
     const state = {
-        data: { pinned: [], recent: [], all: [], tags: [] },
+        data: { pinned: [], recent: [], all: [], tags: [], limits: { pinned: 6, recent: 6 }, theme: "blackBlue" },
         loaded: false,
         query: saved.query || "",
         selectedTags: saved.selectedTags || [],
-        activeKey: undefined // the row that owns the single tab stop of the lists (roving tabindex)
+        expanded: saved.expanded || {},  // sections temporarily showing all projects
+        activeKey: undefined            // the tile that owns the single tab stop of the grids (roving tabindex)
     };
 
     function format(text, ...args) {
@@ -54,7 +57,7 @@
     }
 
     function persist() {
-        vscode.setState({ query: state.query, selectedTags: state.selectedTags });
+        vscode.setState({ query: state.query, selectedTags: state.selectedTags, expanded: state.expanded });
     }
 
     // ---------------------------------------------------------------- layout (built once)
@@ -115,6 +118,10 @@
 
     // ---------------------------------------------------------------- rendering
 
+    function applyTheme() {
+        document.body.classList.toggle("theme-black-blue", state.data.theme === "blackBlue");
+    }
+
     function isFiltering() {
         return !isEmptyQuery(parseQuery(state.query)) || state.selectedTags.length > 0;
     }
@@ -153,8 +160,7 @@
         lists.replaceChildren();
 
         if (isFiltering()) {
-            const results = filtered();
-            lists.append(section("results", t.results, results, t.noResults));
+            lists.append(section("results", t.results, filtered(), t.noResults));
         } else {
             lists.append(section("pinned", t.pinned, state.data.pinned, t.noPinned));
             lists.append(section("recent", t.recent, state.data.recent, t.noRecent));
@@ -162,7 +168,7 @@
 
         updateRovingTabStop();
         if (focusedKey) {
-            const target = lists.querySelector(`[data-key="${CSS.escape(focusedKey)}"]`) || rowMains()[ 0 ];
+            const target = lists.querySelector(`[data-key="${CSS.escape(focusedKey)}"]`) || tiles()[ 0 ];
             if (target) {
                 target.focus();
             } else {
@@ -173,51 +179,94 @@
 
     function section(id, title, projects, emptyText) {
         const headingId = `heading-${id}`;
-        const list = el("ul", { class: "rows", "aria-labelledby": headingId });
-        projects.forEach(project => list.append(row(project)));
+        const limit = id === "results" ? 0 : state.data.limits[ id ];
+        const expanded = !!state.expanded[ id ];
+        const visible = limit > 0 && !expanded ? projects.slice(0, limit) : projects;
 
-        return el("section", { class: "section", "aria-labelledby": headingId }, [
-            el("h2", { id: headingId }, [ el("span", { text: title }), el("span", { class: "count", text: state.loaded ? `(${projects.length})` : "" }) ]),
-            projects.length > 0 ? list : el("p", { class: "empty", text: state.loaded ? emptyText : "" })
+        const grid = el("ul", { class: "grid", "aria-labelledby": headingId });
+        visible.forEach(project => grid.append(tile(project)));
+
+        const header = el("div", { class: "section-header" }, [
+            el("h2", { id: headingId }, [ el("span", { text: title }), el("span", { class: "count", text: state.loaded ? `${projects.length}` : "" }) ]),
+            id === "results" ? undefined : limitPicker(id, title)
+        ]);
+
+        const more = limit > 0 && projects.length > limit
+            ? el("button", {
+                type: "button",
+                class: "link more",
+                "aria-expanded": String(expanded),
+                onclick: () => {
+                    state.expanded[ id ] = !expanded;
+                    persist();
+                    renderLists();
+                }
+            }, [ el("span", { text: expanded ? t.showLess : format(t.showMore, projects.length) }) ])
+            : undefined;
+
+        return el("section", { class: `section section-${id}`, "aria-labelledby": headingId }, [
+            header,
+            projects.length > 0 ? grid : el("p", { class: "empty", text: state.loaded ? emptyText : "" }),
+            more
         ]);
     }
 
-    function row(project) {
-        const key = project.rootPath;
-        const kindIcon = project.kind === "workspace" ? "workspace" : project.kind === "remote" ? "remote" : "folder";
+    // segmented control: 3 / 6 / 9 / All
+    function limitPicker(id, title) {
+        const current = state.data.limits[ id ];
+        return el("div", { class: "limit", role: "group", "aria-label": format(t.showCount, title) }, [
+            el("span", { class: "limit-label", "aria-hidden": "true", text: t.show }),
+            ...LIMIT_OPTIONS.map(value => el("button", {
+                type: "button",
+                class: "limit-option",
+                "aria-pressed": String(current === value),
+                onclick: () => {
+                    state.expanded[ id ] = false;
+                    persist();
+                    post({ type: "setLimit", section: id, limit: value });
+                }
+            }, [ el("span", { text: value === 0 ? t.all : String(value) }) ]))
+        ]);
+    }
 
-        const tags = project.tags.length > 0
-            ? el("span", { class: "tags" }, project.tags.map(tag => el("span", { class: "tag", text: tag })))
-            : undefined;
+    function tile(project) {
+        const key = project.rootPath;
+        const description = [
+            project.tags.length > 0 ? format(t.tags, project.tags.join(", ")) : undefined,
+            project.kind === "workspace" ? t.workspace : undefined,
+            project.pinned ? t.pinnedBadge : undefined,
+            project.displayPath
+        ].filter(Boolean).join(", ");
 
         const main = el("button", {
             type: "button",
-            class: "row-main",
+            class: "tile-main",
             "data-key": key,
-            "data-nav": "main",
-            title: format(t.open, project.name),
+            "data-nav": "tile",
+            title: `${project.name}\n${project.displayPath}`,
+            "aria-label": `${project.name}, ${description}`,
+            "aria-keyshortcuts": "Enter Control+Enter P T",
             onclick: event => open(project, event.ctrlKey || event.metaKey),
-            onkeydown: event => onRowKeyDown(event, project)
+            onkeydown: event => onTileKeyDown(event, project),
+            oncontextmenu: event => {
+                event.preventDefault();
+                event.currentTarget.parentElement.querySelector(".action").focus();
+            }
         }, [
-            el("span", { class: "kind", html: icon(kindIcon) }),
-            el("span", { class: "text" }, [
-                el("span", { class: "name-line" }, [
-                    el("span", { class: "name", text: project.name }),
-                    tags ? el("span", { class: "visually-hidden", text: ", " + format(t.tags, project.tags.join(", ")) }) : undefined,
-                    tags ? el("span", { "aria-hidden": "true" }, [ tags ]) : undefined,
-                    project.kind === "workspace" ? el("span", { class: "meta", text: t.workspace }) : undefined
-                ]),
-                el("span", { class: "path" }, [ el("span", { class: "visually-hidden", text: ", " }), project.displayPath ])
-            ])
+            el("span", { class: "folder-wrap", html: folder(project.kind) }),
+            el("span", { class: "name", text: project.name }),
+            project.tags.length > 0 ? el("span", { class: "tags", "aria-hidden": "true", text: project.tags.map(tag => `#${tag}`).join(" ") }) : undefined
         ]);
 
-        const actions = el("div", { class: "row-actions" }, [
+        const pinBadge = project.pinned ? el("span", { class: "pin-badge", "aria-hidden": "true", html: icon("pinFilled") }) : undefined;
+
+        const actions = el("div", { class: "tile-actions" }, [
             actionButton(key, "newWindow", "newWindow", t.openInNewWindow, () => open(project, true)),
             actionButton(key, "pin", project.pinned ? "pinFilled" : "pin", project.pinned ? t.unpin : t.pin, () => togglePin(project)),
             actionButton(key, "tags", "tag", t.editTags, () => post({ type: "editTags", rootPath: project.rootPath }))
         ]);
 
-        return el("li", { class: project.pinned ? "row pinned" : "row" }, [ main, actions ]);
+        return el("li", { class: project.pinned ? "tile pinned" : "tile" }, [ main, pinBadge, actions ]);
     }
 
     function actionButton(key, action, iconName, label, handler) {
@@ -228,7 +277,6 @@
             title: label,
             "aria-label": label,
             "data-key": `${key}|${action}`,
-            "data-nav": "action",
             onclick: handler,
             onkeydown: onActionKeyDown
         }, [ el("span", { html: icon(iconName) }) ]);
@@ -247,6 +295,7 @@
     }
 
     function render() {
+        applyTheme();
         renderChips();
         renderLists();
         clearButton.hidden = state.query === "";
@@ -289,59 +338,97 @@
 
     // ---------------------------------------------------------------- keyboard
 
-    function rowMains() {
-        return [ ...lists.querySelectorAll('[data-nav="main"]') ];
+    function tiles() {
+        return [ ...lists.querySelectorAll('[data-nav="tile"]') ];
     }
 
     function updateRovingTabStop() {
-        const mains = rowMains();
-        const active = mains.find(main => main.dataset.key === state.activeKey) || mains[ 0 ];
-        mains.forEach(main => main.tabIndex = main === active ? 0 : -1);
+        const all = tiles();
+        const active = all.find(item => item.dataset.key === state.activeKey) || all[ 0 ];
+        all.forEach(item => item.tabIndex = item === active ? 0 : -1);
     }
 
-    function focusRow(main) {
-        if (!main) {
+    function focusTile(target) {
+        if (!target) {
             return;
         }
-        state.activeKey = main.dataset.key;
+        state.activeKey = target.dataset.key;
         updateRovingTabStop();
-        main.focus();
+        target.focus();
     }
 
-    function onRowKeyDown(event, project) {
-        const mains = rowMains();
-        const index = mains.indexOf(event.currentTarget);
+    // the tile right above/below, following the visual grid (across sections)
+    function verticalNeighbor(current, direction) {
+        const from = current.getBoundingClientRect();
+        const centerX = from.left + from.width / 2;
+        const candidates = tiles()
+            .map(item => ({ item, rect: item.getBoundingClientRect() }))
+            .filter(({ rect }) => direction > 0 ? rect.top > from.bottom - 1 : rect.bottom < from.top + 1);
+        if (candidates.length === 0) {
+            return undefined;
+        }
+        const rowTop = direction > 0
+            ? Math.min(...candidates.map(({ rect }) => rect.top))
+            : Math.max(...candidates.map(({ rect }) => rect.top));
+        return candidates
+            .filter(({ rect }) => Math.abs(rect.top - rowTop) < 2)
+            .sort((a, b) => Math.abs(a.rect.left + a.rect.width / 2 - centerX) - Math.abs(b.rect.left + b.rect.width / 2 - centerX))[ 0 ].item;
+    }
+
+    function onTileKeyDown(event, project) {
+        const all = tiles();
+        const index = all.indexOf(event.currentTarget);
 
         switch (event.key) {
+            case "ArrowRight":
+                event.preventDefault();
+                focusTile(all[ Math.min(index + 1, all.length - 1) ]);
+                break;
+            case "ArrowLeft":
+                event.preventDefault();
+                focusTile(all[ Math.max(index - 1, 0) ]);
+                break;
             case "ArrowDown":
                 event.preventDefault();
-                focusRow(mains[ Math.min(index + 1, mains.length - 1) ]);
+                focusTile(verticalNeighbor(event.currentTarget, 1));
                 break;
-            case "ArrowUp":
+            case "ArrowUp": {
                 event.preventDefault();
-                if (index === 0) {
-                    searchInput.focus();
+                const above = verticalNeighbor(event.currentTarget, -1);
+                if (above) {
+                    focusTile(above);
                 } else {
-                    focusRow(mains[ index - 1 ]);
+                    searchInput.focus();
                 }
                 break;
+            }
             case "Home":
                 event.preventDefault();
-                focusRow(mains[ 0 ]);
+                focusTile(all[ 0 ]);
                 break;
             case "End":
                 event.preventDefault();
-                focusRow(mains[ mains.length - 1 ]);
-                break;
-            case "ArrowRight":
-                event.preventDefault();
-                event.currentTarget.parentElement.querySelector('[data-nav="action"]').focus();
+                focusTile(all[ all.length - 1 ]);
                 break;
             case "Enter":
                 if (event.ctrlKey || event.metaKey) {
                     event.preventDefault();
                     open(project, true);
                 }
+                break;
+            case "p":
+            case "P":
+                event.preventDefault();
+                togglePin(project);
+                break;
+            case "t":
+            case "T":
+                event.preventDefault();
+                post({ type: "editTags", rootPath: project.rootPath });
+                break;
+            case "ContextMenu":
+                event.preventDefault();
+                event.currentTarget.parentElement.querySelector(".action").focus();
                 break;
             case "Escape":
                 event.preventDefault();
@@ -351,29 +438,25 @@
     }
 
     function onActionKeyDown(event) {
-        const actions = [ ...event.currentTarget.parentElement.querySelectorAll('[data-nav="action"]') ];
+        const actions = [ ...event.currentTarget.parentElement.querySelectorAll(".action") ];
         const index = actions.indexOf(event.currentTarget);
-        const main = event.currentTarget.closest(".row").querySelector('[data-nav="main"]');
+        const main = event.currentTarget.closest(".tile").querySelector('[data-nav="tile"]');
 
         switch (event.key) {
             case "ArrowRight":
+            case "ArrowDown":
                 event.preventDefault();
                 (actions[ index + 1 ] || actions[ index ]).focus();
                 break;
             case "ArrowLeft":
+            case "ArrowUp":
                 event.preventDefault();
                 (actions[ index - 1 ] || main).focus();
                 break;
-            case "ArrowDown":
-            case "ArrowUp":
-            case "Escape": {
+            case "Escape":
                 event.preventDefault();
-                const mains = rowMains();
-                const mainIndex = mains.indexOf(main);
-                const target = event.key === "ArrowDown" ? mains[ mainIndex + 1 ] : event.key === "ArrowUp" ? mains[ mainIndex - 1 ] : main;
-                focusRow(target || main);
+                focusTile(main);
                 break;
-            }
         }
     }
 
@@ -390,7 +473,7 @@
             case "ArrowLeft": target = all[ (index - 1 + all.length) % all.length ]; break;
             case "Home": target = all[ 0 ]; break;
             case "End": target = all[ all.length - 1 ]; break;
-            case "ArrowDown": event.preventDefault(); focusRow(rowMains()[ 0 ]); return;
+            case "ArrowDown": event.preventDefault(); focusTile(tiles()[ 0 ]); return;
             case "ArrowUp": event.preventDefault(); searchInput.focus(); return;
             default: return;
         }
@@ -403,9 +486,9 @@
     searchInput.addEventListener("keydown", event => {
         if (event.key === "ArrowDown") {
             event.preventDefault();
-            focusRow(rowMains()[ 0 ]);
+            focusTile(tiles()[ 0 ]);
         } else if (event.key === "Enter") {
-            const first = rowMains()[ 0 ];
+            const first = tiles()[ 0 ];
             if (first && isFiltering()) {
                 event.preventDefault();
                 first.click();

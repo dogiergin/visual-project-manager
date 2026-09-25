@@ -12,7 +12,6 @@
     "Filter by tag": "Etikete göre filtrele",
     "Filters the Pinned and Favorites views. Type a project name, or use #tag. Press Down Arrow to move to the results.": "Sabitlenenler ve Favoriler görünümlerini filtreler. Proje adı yazın ya da #etiket kullanın. Sonuçlara geçmek için Aşağı Ok tuşuna basın.",
     "Type a project name, or use #tag to filter by tag. Press Down Arrow to move to the results.": "Proje adı yazın ya da etikete göre filtrelemek için #etiket kullanın. Sonuçlara geçmek için Aşağı Ok tuşuna basın.",
-    "Keyboard: / search · ↑ ↓ move · ← → actions · Enter open · Ctrl+Enter new window · Esc clear": "Klavye: / ara · ↑ ↓ gezin · ← → işlemler · Enter aç · Ctrl+Enter yeni pencere · Esc temizle",
     "No pinned projects yet. Use the pin button next to a project to keep it here.": "Henüz sabitlenmiş proje yok. Bir projeyi burada tutmak için yanındaki sabitle düğmesini kullanın.",
     "No projects match the current filter.": "Filtreyle eşleşen proje yok.",
     "No projects match your search.": "Aramanızla eşleşen proje yok.",
@@ -44,5 +43,11 @@
     "Select the tags": "Etiketleri seçin",
     "Add new tags": "Yeni etiket ekle",
     "Open Project": "Projeyi Aç",
-    "Do you want to open the project in the active window?": "Proje etkin pencerede açılsın mı?"
+    "Do you want to open the project in the active window?": "Proje etkin pencerede açılsın mı?",
+    "Keyboard: / search · arrows move · Enter open · Ctrl+Enter new window · P pin · T tags · Esc clear": "Klavye: / ara · oklar gezin · Enter aç · Ctrl+Enter yeni pencere · P sabitle · T etiketler · Esc temizle",
+    "Show": "Göster",
+    "Number of projects to show in {0}": "{0} bölümünde gösterilecek proje sayısı",
+    "All": "Tümü",
+    "Show all ({0})": "Tümünü göster ({0})",
+    "Show less": "Daha az göster"
 }

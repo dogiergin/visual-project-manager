@@ -37,13 +37,26 @@ interface HomeData {
     recent: HomeProject[];
     all: HomeProject[];
     tags: string[];
+    limits: Record<HomeSection, number>; // 0 = show all
+    theme: string;
 }
+
+type HomeSection = "pinned" | "recent";
+
+const LIMIT_SETTINGS: Record<HomeSection, string> = {
+    pinned: "home.pinnedProjectsLimit",
+    recent: "home.recentProjectsLimit"
+};
+const DEFAULT_LIMIT = 6;
+// how many recent projects are loaded, so the search can find them even when only a few are displayed
+const RECENT_PROJECTS_TO_LOAD = 50;
 
 type HomeMessage =
     | { type: "ready" }
     | { type: "open"; rootPath: string; newWindow: boolean }
     | { type: "setPinned"; rootPath: string; pinned: boolean }
     | { type: "editTags"; rootPath: string }
+    | { type: "setLimit"; section: HomeSection; limit: number }
     | { type: "command"; command: "openFolder" | "listProjects" | "saveProject" | "openSettings" };
 
 const VIEW_TYPE = "projectManager.home";
@@ -131,6 +144,13 @@ export class ProjectsHome {
                 await this.actions.editTags(message.rootPath);
                 break;
 
+            case "setLimit":
+                if (LIMIT_SETTINGS[message.section] && [ 0, 3, 6, 9, 12 ].includes(message.limit)) {
+                    await vscode.workspace.getConfiguration("projectManager")
+                        .update(LIMIT_SETTINGS[message.section], message.limit, vscode.ConfigurationTarget.Global);
+                }
+                break;
+
             case "command":
                 switch (message.command) {
                     case "openFolder":
@@ -151,7 +171,7 @@ export class ProjectsHome {
     }
 
     private async getData(): Promise<HomeData> {
-        const limit = vscode.workspace.getConfiguration("projectManager").get<number>("home.recentProjectsLimit", 10);
+        const config = vscode.workspace.getConfiguration("projectManager");
         const saved = this.projectStorage.getProjects().filter(project => project.enabled);
 
         const toHomeProject = (rootPath: string, name?: string, tags: string[] = [], pinned = false, isSaved = false): HomeProject => {
@@ -172,7 +192,7 @@ export class ProjectsHome {
 
         const samePath = (a: string, b: string) => a.toLocaleLowerCase() === b.toLocaleLowerCase();
         const recent: HomeProject[] = [];
-        for (const item of await getRecentLocalProjects(this.projectStorage, limit)) {
+        for (const item of await getRecentLocalProjects(this.projectStorage, RECENT_PROJECTS_TO_LOAD)) {
             const savedProject = all.find(project => samePath(project.rootPath, item.rootPath));
             const homeProject = savedProject ?? toHomeProject(item.rootPath);
             if (!homeProject.pinned) {
@@ -184,7 +204,12 @@ export class ProjectsHome {
         }
 
         const tags = this.projectStorage.getAvailableTags().sort((a, b) => a.localeCompare(b));
-        return { pinned, recent, all, tags };
+        const limits = {
+            pinned: config.get<number>(LIMIT_SETTINGS.pinned, DEFAULT_LIMIT),
+            recent: config.get<number>(LIMIT_SETTINGS.recent, DEFAULT_LIMIT)
+        };
+        const theme = config.get<string>("home.theme", "blackBlue");
+        return { pinned, recent, all, tags, limits, theme };
     }
 
     /** VS Code opens its own Welcome page unless `workbench.startupEditor` is `none`. Ask only once. */
@@ -231,7 +256,13 @@ export class ProjectsHome {
             settings: l10n.t("Settings"),
             pinnedAnnouncement: l10n.t("{0} pinned"),
             unpinnedAnnouncement: l10n.t("{0} unpinned"),
-            keyboardHelp: l10n.t("Keyboard: / search · ↑ ↓ move · ← → actions · Enter open · Ctrl+Enter new window · Esc clear"),
+            keyboardHelp: l10n.t("Keyboard: / search · arrows move · Enter open · Ctrl+Enter new window · P pin · T tags · Esc clear"),
+            show: l10n.t("Show"),
+            showCount: l10n.t("Number of projects to show in {0}"),
+            all: l10n.t("All"),
+            showMore: l10n.t("Show all ({0})"),
+            showLess: l10n.t("Show less"),
+            pinnedBadge: l10n.t("Pinned"),
             credits: l10n.t("Based on Project Manager by Alessandro Fragnani")
         };
     }

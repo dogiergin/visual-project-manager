@@ -27,5 +27,28 @@
             'stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">' + paths[name] + '</svg>';
     }
 
-    window.Icons = { icon };
+    // Large folder in the style of the Windows 11 File Explorer (drawn from scratch, not the Windows asset)
+    let folderId = 0;
+    function folder(kind) {
+        const id = `folder${folderId++}`;
+        const badge = kind === "workspace"
+            ? '<g transform="translate(66 50)"><rect width="24" height="20" rx="4" fill="#1f6feb"/><path d="M5 6h14M5 10h14M5 14h9" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></g>'
+            : kind === "remote"
+                ? '<g transform="translate(66 48)"><circle cx="12" cy="12" r="11" fill="#1f6feb"/><path d="M1 12h22M12 1c4 4 4 18 0 22M12 1c-4 4-4 18 0 22" stroke="#fff" stroke-width="1.5" fill="none"/></g>'
+                : "";
+        return `<svg class="folder" aria-hidden="true" focusable="false" viewBox="0 0 96 80">
+            <defs>
+                <linearGradient id="${id}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3b52c"/><stop offset="1" stop-color="#d98f06"/></linearGradient>
+                <linearGradient id="${id}f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe189"/><stop offset="1" stop-color="#ffc53d"/></linearGradient>
+            </defs>
+            <path d="M6 14a6 6 0 0 1 6-6h22.5a4 4 0 0 1 2.8 1.2L44 16h40a6 6 0 0 1 6 6v46a6 6 0 0 1-6 6H12a6 6 0 0 1-6-6z" fill="url(#${id}b)"/>
+            <rect x="13" y="19" width="70" height="40" rx="2.5" fill="#fafafa"/>
+            <path d="M20 27h40M20 33h52M20 39h30" stroke="#d8d8d8" stroke-width="2" stroke-linecap="round"/>
+            <path d="M4 32a6 6 0 0 1 6-6h76a6 6 0 0 1 6 6v36a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6z" fill="url(#${id}f)"/>
+            <path d="M4 32a6 6 0 0 1 6-6h76a6 6 0 0 1 6 6" fill="none" stroke="#fff3c4" stroke-opacity=".7" stroke-width="1.2"/>
+            ${badge}
+        </svg>`;
+    }
+
+    window.Icons = { icon, folder };
 }());

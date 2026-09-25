@@ -3,17 +3,45 @@
 *  Licensed under the GPLv3 License. See License.md in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+/* "Black & Blue" theme (setting `projectManager.home.theme`). High Contrast themes always win. */
+body.theme-black-blue:not(.vscode-high-contrast) {
+    --pm-fg: #e6edf3;
+    --pm-muted: #8fa3bb;
+    --pm-bg: #07090d;
+    --pm-surface: #0e131b;
+    --pm-hover: #122033;
+    --pm-selected: #16345a;
+    --pm-focus: #4da3ff;
+    --pm-border: #1b2636;
+    --pm-accent: #3b9eff;
+    --pm-input-bg: #0e131b;
+    --pm-input-fg: #e6edf3;
+    --pm-input-border: #22324a;
+    --pm-chip-bg: #0f1826;
+    --pm-chip-fg: #b9d4f5;
+    --pm-chip-active-bg: #1f6feb;
+    --pm-chip-active-fg: #ffffff;
+    --pm-badge-bg: #1f6feb;
+    --pm-badge-fg: #ffffff;
+    --pm-link: #58a6ff;
+    --pm-tag: #6cb6ff;
+}
+
 body {
+    --pm-surface: var(--vscode-sideBar-background, var(--pm-bg));
+    --pm-selected: var(--vscode-list-activeSelectionBackground, var(--pm-hover));
+    --pm-accent: var(--vscode-textLink-foreground);
+    --pm-tag: var(--vscode-textLink-foreground);
     background: var(--pm-bg);
 }
 
 .home {
-    max-width: 760px;
+    max-width: 1040px;
     margin: 0 auto;
-    padding: 32px 24px 24px;
+    padding: 36px 32px 24px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
 }
 
 .header {
@@ -26,8 +54,16 @@ body {
 
 h1 {
     margin: 0;
-    font-size: 1.6em;
-    font-weight: 400;
+    font-size: 1.8em;
+    font-weight: 300;
+    letter-spacing: 0.01em;
+}
+
+body.theme-black-blue:not(.vscode-high-contrast) h1 {
+    background: linear-gradient(90deg, #e6edf3, #6cb6ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .toolbar {
@@ -40,11 +76,11 @@ h1 {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    min-height: 26px;
-    padding: 2px 8px;
+    min-height: 28px;
+    padding: 3px 10px;
     background: transparent;
     border: 1px solid transparent;
-    border-radius: var(--pm-radius);
+    border-radius: 6px;
     color: var(--pm-link);
 }
 
@@ -58,146 +94,250 @@ h1 {
 
 .tool.icon-only {
     color: var(--pm-fg);
-    padding: 2px 5px;
+    padding: 3px 6px;
 }
 
 .search input {
-    min-height: 32px;
+    min-height: 36px;
     font-size: 1.05em;
+    border-radius: 8px;
 }
 
 .lists {
     display: flex;
     flex-direction: column;
-    gap: 18px;
-    margin-top: 4px;
+    gap: 26px;
+    margin-top: 6px;
+}
+
+/* ---------------------------------------------------------------- sections */
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--pm-border);
 }
 
 h2 {
     display: flex;
-    gap: 6px;
-    align-items: baseline;
-    margin: 0 0 6px;
+    gap: 8px;
+    align-items: center;
+    margin: 0;
     font-size: 0.85em;
     font-weight: 600;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--pm-muted);
 }
 
 h2 .count {
-    font-weight: 400;
-}
-
-.empty {
-    margin: 0;
-    padding: 8px 10px;
-    color: var(--pm-muted);
-}
-
-.rows {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    border-top: 1px solid var(--pm-border);
-}
-
-.row {
-    display: flex;
-    align-items: stretch;
-    border-bottom: 1px solid var(--pm-border);
-    border-radius: var(--pm-radius);
-}
-
-.row:hover,
-.row:focus-within {
-    background: var(--pm-hover);
-}
-
-body.vscode-high-contrast .row:hover {
-    outline: 1px dashed var(--pm-hc-active);
-    outline-offset: -1px;
-}
-
-.row-main {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 7px 10px;
-    text-align: left;
-    background: transparent;
-    border: 0;
-    border-radius: var(--pm-radius);
-}
-
-.row-main .kind {
-    display: flex;
-    color: var(--pm-muted);
-}
-
-.text {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.name-line {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.name {
-    font-weight: 600;
-}
-
-.tags {
-    display: inline-flex;
-    gap: 4px;
-    flex-wrap: wrap;
-}
-
-.tag {
+    min-width: 20px;
     padding: 0 6px;
-    border-radius: 8px;
-    font-size: 0.85em;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0;
     background: var(--pm-badge-bg);
     color: var(--pm-badge-fg);
     border: 1px solid var(--pm-hc-border);
 }
 
-.meta {
-    font-size: 0.85em;
+h2 .count:empty {
+    display: none;
+}
+
+.empty {
+    margin: 0;
+    padding: 14px 4px;
     color: var(--pm-muted);
 }
 
-.path {
-    font-size: 0.9em;
-    color: var(--pm-muted);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.row-actions {
-    display: flex;
+/* 3 / 6 / 9 / All */
+.limit {
+    display: inline-flex;
     align-items: center;
     gap: 2px;
-    padding-right: 6px;
-    opacity: 0.7;
+    font-size: 0.85em;
 }
 
-body.vscode-high-contrast .row-actions {
-    opacity: 1;
+.limit-label {
+    margin-right: 6px;
+    color: var(--pm-muted);
 }
 
-.row:hover .row-actions,
-.row:focus-within .row-actions,
-.row.pinned .row-actions {
+.limit-option {
+    min-width: 30px;
+    min-height: 24px;
+    padding: 1px 8px;
+    background: transparent;
+    border: 1px solid var(--pm-border);
+    color: var(--pm-muted);
+}
+
+.limit-option:first-of-type {
+    border-radius: 6px 0 0 6px;
+}
+
+.limit-option:last-of-type {
+    border-radius: 0 6px 6px 0;
+}
+
+.limit-option:hover {
+    background: var(--pm-hover);
+    color: var(--pm-fg);
+}
+
+.limit-option[aria-pressed="true"] {
+    background: var(--pm-chip-active-bg);
+    border-color: var(--pm-chip-active-bg);
+    color: var(--pm-chip-active-fg);
+}
+
+body.vscode-high-contrast .limit-option[aria-pressed="true"] {
+    outline: 2px solid var(--pm-hc-active);
+    outline-offset: -2px;
+}
+
+.link {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    color: var(--pm-link);
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.more {
+    margin-top: 8px;
+}
+
+/* ---------------------------------------------------------------- tiles */
+
+.grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    /* multiples of 3, so the 3 / 6 / 9 limits always fill whole rows */
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 8px;
+}
+
+@media (max-width: 900px) {
+    .grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.tile {
+    position: relative;
+    border-radius: 10px;
+}
+
+.tile-main {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 8px 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.tile-main:hover {
+    background: var(--pm-hover);
+}
+
+.tile-main:focus-visible {
+    background: var(--pm-selected);
+    outline: 1px solid var(--pm-focus);
+    outline-offset: -1px;
+}
+
+body.vscode-high-contrast .tile-main:hover {
+    outline: 1px dashed var(--pm-hc-active);
+    outline-offset: -1px;
+}
+
+body.vscode-high-contrast .tile-main:focus-visible {
+    outline: 2px solid var(--pm-hc-active);
+}
+
+.folder-wrap {
+    display: flex;
+}
+
+.folder {
+    width: 96px;
+    height: 80px;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+    transition: transform 120ms ease-out;
+}
+
+.tile-main:hover .folder,
+.tile-main:focus-visible .folder {
+    transform: translateY(-2px);
+}
+
+.name {
+    max-width: 100%;
+    font-size: 1.02em;
+    font-weight: 500;
+    line-height: 1.3;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow-wrap: anywhere;
+}
+
+.tags {
+    max-width: 100%;
+    font-size: 0.82em;
+    color: var(--pm-tag);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pin-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    display: flex;
+    padding: 3px;
+    border-radius: 6px;
+    color: var(--pm-accent);
+    pointer-events: none;
+}
+
+/* actions appear on hover / keyboard focus */
+.tile-actions {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: flex;
+    gap: 1px;
+    padding: 2px;
+    border-radius: 7px;
+    background: var(--pm-surface);
+    border: 1px solid var(--pm-border);
+    opacity: 0;
+    transition: opacity 100ms ease-out;
+}
+
+.tile:hover .tile-actions,
+.tile:focus-within .tile-actions {
     opacity: 1;
 }
 
@@ -205,16 +345,23 @@ body.vscode-high-contrast .row-actions {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     padding: 0;
     background: transparent;
     border: 1px solid transparent;
-    border-radius: var(--pm-radius);
+    border-radius: 5px;
 }
 
 .action:hover {
-    background: var(--vscode-toolbar-hoverBackground, var(--pm-hover));
+    background: var(--pm-hover);
+    color: var(--pm-accent);
+}
+
+/* ---------------------------------------------------------------- chips & footer */
+
+body.theme-black-blue:not(.vscode-high-contrast) .chip {
+    border: 1px solid var(--pm-input-border);
 }
 
 .footer {
@@ -227,12 +374,25 @@ body.vscode-high-contrast .row-actions {
     margin: 2px 0;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 520px) {
     .home {
         padding: 16px 12px;
     }
 
     .tool span + span {
+        display: none;
+    }
+
+    .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .folder {
+        width: 72px;
+        height: 60px;
+    }
+
+    .limit-label {
         display: none;
     }
 }

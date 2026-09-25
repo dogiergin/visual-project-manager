@@ -41,15 +41,23 @@ const project = (name, rootPath, tags, pinned, kind = "folder") =>
     ({ rootPath, name, displayPath: rootPath, tags, pinned, saved: true, kind });
 
 const pinned = [
-    project("api-server", "D:\\work\\api-server", [ "Work", "Go" ], true),
-    project("blog", "D:\\personal\\blog", [ "Personal", "Web" ], true)
+    project("AI Engineer Program", "D:\\Visual-Studio-Code\\AI Engineer Program", [ "AI" ], true),
+    project("Visual-Project-Manager", "D:\\Visual-Studio-Code\\Visual-Project-Manager", [ "VS Code" ], true),
+    project("PYTHON", "D:\\Visual-Studio-Code\\PYTHON", [ "Python" ], true)
 ];
 const recent = [
-    project("visual-project-manager", "D:\\Visual-Studio-Code\\Visual-Project-Manager", [ "VS Code" ], false),
-    project("shop", "D:\\work\\shop.code-workspace", [ "Work", "Web" ], false, "workspace"),
-    project("notes", "C:\\Users\\me\\notes", [], false)
+    project("ai-vs-human-dashboard", "D:\\Visual-Studio-Code\\ai-vs-human-dashboard", [ "AI", "Data" ], false),
+    project("Data-Analysis", "D:\\Visual-Studio-Code\\Data-Analysis", [ "Data", "Python" ], false),
+    project("Kaggle-proje", "D:\\Visual-Studio-Code\\Kaggle-proje", [ "Data" ], false),
+    project("shop", "D:\\work\\shop.code-workspace", [ "Web" ], false, "workspace"),
+    project("notes", "C:\\Users\\me\\notes", [], false),
+    project("portfolio", "C:\\Users\\me\\portfolio", [ "Web" ], false),
+    project("scratch", "C:\\Users\\me\\scratch", [], false)
 ];
-const data = { pinned, recent, all: [ ...pinned, ...recent ], tags: [ "Go", "Personal", "VS Code", "Web", "Work" ] };
+const data = {
+    pinned, recent, all: [ ...pinned, ...recent ], tags: [ "AI", "Data", "Python", "VS Code", "Web" ],
+    limits: { pinned: 6, recent: 6 }, theme: "blackBlue"
+};
 
 // English strings, same keys as `getStrings()` in `src/home/projectsHome.ts`
 const strings = {
@@ -60,7 +68,9 @@ const strings = {
     open: "Open {0}", openInNewWindow: "Open in New Window", pin: "Pin", unpin: "Unpin", editTags: "Edit Tags",
     tags: "Tags: {0}", workspace: "Workspace", openFolder: "Open Folder...", listProjects: "All Projects...",
     settings: "Settings", pinnedAnnouncement: "{0} pinned", unpinnedAnnouncement: "{0} unpinned",
-    keyboardHelp: "Keyboard: / search · ↑ ↓ move · ← → actions · Enter open · Ctrl+Enter new window · Esc clear",
+    keyboardHelp: "Keyboard: / search · arrows move · Enter open · Ctrl+Enter new window · P pin · T tags · Esc clear",
+    show: "Show", showCount: "Number of projects to show in {0}", all: "All", showMore: "Show all ({0})",
+    showLess: "Show less", pinnedBadge: "Pinned",
     credits: "Based on Project Manager by Alessandro Fragnani"
 };
 
@@ -94,9 +104,9 @@ const themes = {
 
 const shots = [
     { file: "projects-page-dark.png", theme: "dark", state: {} },
-    { file: "projects-page-light.png", theme: "light", state: {} },
-    { file: "projects-page-search.png", theme: "dark", state: { query: "#wo" } },
-    { file: "projects-page-high-contrast.png", theme: "highContrast", state: { selectedTags: [ "Web" ] } }
+    { file: "projects-page-light.png", theme: "light", pageTheme: "vscode", state: {} },
+    { file: "projects-page-search.png", theme: "dark", state: { query: "#da" } },
+    { file: "projects-page-high-contrast.png", theme: "highContrast", state: { selectedTags: [ "Python" ] } }
 ];
 
 const url = file => pathToFileURL(path.join(media, file)).href;
@@ -114,7 +124,7 @@ for (const shot of shots) {
         setState() { },
         postMessage(message) {
             if (message.type === "ready") {
-                setTimeout(() => window.postMessage({ type: "data", data: ${JSON.stringify(data)} }, "*"));
+                setTimeout(() => window.postMessage({ type: "data", data: ${JSON.stringify({ ...data, theme: shot.pageTheme || data.theme })} }, "*"));
             }
         }
     });
@@ -126,7 +136,7 @@ for (const shot of shots) {
     fs.writeFileSync(page, html);
     execFileSync(browser, [
         "--headless=new", "--disable-gpu", "--hide-scrollbars", "--allow-file-access-from-files",
-        "--window-size=900,560", `--screenshot=${path.join(output, shot.file)}`, pathToFileURL(page).href
+        "--window-size=1000,760", `--screenshot=${path.join(output, shot.file)}`, pathToFileURL(page).href
     ], { stdio: "ignore" });
     console.log(`images/screenshots/${shot.file}`);
 }

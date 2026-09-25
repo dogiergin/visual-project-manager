@@ -133,5 +133,9 @@
     "projectManager.configuration.home.showOnStartup.enumDescriptions.emptyWindow": "Only when the window has no folder or workspace opened",
     "projectManager.configuration.home.showOnStartup.enumDescriptions.always": "Every time a window is opened",
     "projectManager.configuration.home.showOnStartup.enumDescriptions.never": "Never. Use the `Open Projects Page` command instead",
-    "projectManager.configuration.home.recentProjectsLimit.description": "Maximum number of recently opened local projects displayed in the Projects page"
+    "projectManager.configuration.home.recentProjectsLimit.description": "Number of recently opened local projects displayed in the Projects page (0 = all)",
+    "projectManager.configuration.home.pinnedProjectsLimit.description": "Number of pinned projects displayed in the Projects page (0 = all)",
+    "projectManager.configuration.home.theme.description": "Color theme of the Projects page. High Contrast themes are always respected.",
+    "projectManager.configuration.home.theme.enumDescriptions.blackBlue": "Black background with blue accents",
+    "projectManager.configuration.home.theme.enumDescriptions.vscode": "Follow the current VS Code color theme"
 }

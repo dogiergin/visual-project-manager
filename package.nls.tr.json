@@ -11,7 +11,11 @@
     "projectManager.configuration.home.showOnStartup.enumDescriptions.emptyWindow": "Yalnızca pencerede açık klasör veya çalışma alanı yokken",
     "projectManager.configuration.home.showOnStartup.enumDescriptions.always": "Her pencere açıldığında",
     "projectManager.configuration.home.showOnStartup.enumDescriptions.never": "Hiçbir zaman. Bunun yerine `Projeler Sayfasını Aç` komutunu kullanın",
-    "projectManager.configuration.home.recentProjectsLimit.description": "Projeler sayfasında gösterilecek en fazla son açılan yerel proje sayısı",
+    "projectManager.configuration.home.recentProjectsLimit.description": "Projeler sayfasında gösterilecek son açılan yerel proje sayısı (0 = tümü)",
     "projectManager.activitybar.title": "Proje Yöneticisi",
-    "projectManager.views.favorites.name": "Favoriler"
+    "projectManager.views.favorites.name": "Favoriler",
+    "projectManager.configuration.home.pinnedProjectsLimit.description": "Projeler sayfasında gösterilecek sabitlenmiş proje sayısı (0 = tümü)",
+    "projectManager.configuration.home.theme.description": "Projeler sayfasının renk teması. Yüksek Kontrast temalara her zaman uyulur.",
+    "projectManager.configuration.home.theme.enumDescriptions.blackBlue": "Siyah arka plan, mavi vurgular",
+    "projectManager.configuration.home.theme.enumDescriptions.vscode": "Geçerli VS Code renk temasını kullan"
 }
