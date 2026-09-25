@@ -10,18 +10,40 @@ body {
 .panel {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: 6px 12px 8px 20px;
+    gap: 6px;
+    padding: 4px 12px 6px 20px;
+}
+
+.search input {
+    min-height: 26px;
+    border-radius: 6px;
 }
 
 .chips {
     gap: 4px;
 }
 
+/* visible pills in every theme, not only when the theme defines a secondary button color */
 .chip {
-    min-height: 22px;
-    padding: 1px 8px;
-    font-size: 0.95em;
+    min-height: 20px;
+    padding: 0 8px;
+    font-size: 0.92em;
+    background: var(--vscode-badge-background, var(--pm-chip-bg));
+    color: var(--vscode-badge-foreground, var(--pm-chip-fg));
+    border: 1px solid var(--vscode-widget-border, var(--pm-input-border));
+}
+
+.chip:hover {
+    border-color: var(--pm-focus);
+}
+
+.chip .icon {
+    width: 12px;
+    height: 12px;
+}
+
+.chip[aria-pressed="true"] {
+    border-color: var(--pm-focus);
 }
 
 .chips[hidden] {

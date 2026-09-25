@@ -4,7 +4,7 @@
     "projectManager.viewsWelcome.pinned.contents": "En çok kullandığınız projeleri sabitleyin; Kenar Çubuğunun en üstünde ve Projeler sayfasında burada kalsınlar.\n[Projeler Sayfasını Aç](command:projectManager.openHome)",
     "projectManager.commands.openHome.title": "Project Manager: Projeler Sayfasını Aç",
     "projectManager.commands.searchSideBar.title": "Project Manager: Kenar Çubuğunda Proje Ara",
-    "projectManager.commands.clearSideBarFilter.title": "Project Manager: Kenar Çubuğu Filtresini Temizle",
+    "projectManager.commands.clearSideBarFilter.title": "Project Manager: Aramayı ve Etiket Filtresini Temizle",
     "projectManager.commands.pinProject.title": "Sabitle",
     "projectManager.commands.unpinProject.title": "Sabitlemeyi Kaldır",
     "projectManager.configuration.home.showOnStartup.description": "Projeler sayfasının açılışta ne zaman gösterileceği. VS Code Hoş Geldiniz sayfasını gizlemek için `#workbench.startupEditor#` değeri `none` olmalıdır (bu eklenti yüklüyken varsayılan).",
@@ -27,5 +27,13 @@
     "projectManager.configuration.autoTags.engine.enumDescriptions.rules": "Yalnızca kurallar. Ollaya hiç çağrılmaz",
     "projectManager.configuration.autoTags.engine.enumDescriptions.ollaya": "Kurallar ve Ollaya; Ollaya çalışmıyorsa uyar",
     "projectManager.configuration.autoTags.ollaya.url.description": "Yerel Ollaya sunucusunun adresi",
-    "projectManager.configuration.autoTags.ollaya.model.description": "Kategoriler için kullanılacak Ollaya karar modeli"
+    "projectManager.configuration.autoTags.ollaya.model.description": "Kategoriler için kullanılacak Ollaya karar modeli",
+    "projectManager.commands.saveProject.title": "Project Manager: Geçerli Klasörü Proje Olarak Kaydet",
+    "projectManager.commands.editProjects.title": "Project Manager: Proje Dosyasını Düzenle (projects.json)",
+    "projectManager.commands.viewAsTags#sideBarFavorites.title": "Etiketlere Göre Grupla",
+    "projectManager.commands.viewAsList#sideBarFavorites.title": "Liste Olarak Göster",
+    "projectManager.commands.listFavoriteProjects#sideBarFavorites.title": "Favori Proje Bul...",
+    "projectManager.commands.filterProjectsByTag#sideBar.title": "Etikete Göre Filtrele...",
+    "projectManager.commands.openSettings#sideBarFavorites.title": "Ayarlar",
+    "projectManager.submenus.viewAndSort#sideBarFavorites.title": "Görünüm ve Sıralama"
 }

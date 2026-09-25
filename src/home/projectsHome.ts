@@ -60,7 +60,7 @@ type HomeMessage =
     | { type: "editTags"; rootPath: string }
     | { type: "acceptSuggestions"; rootPath: string }
     | { type: "setLimit"; section: HomeSection; limit: number }
-    | { type: "command"; command: "openFolder" | "listProjects" | "saveProject" | "openSettings" };
+    | { type: "command"; command: "openFolder" | "cloneRepository" | "listProjects" | "saveProject" | "openSettings" };
 
 const VIEW_TYPE = "projectManager.home";
 const ASKED_ABOUT_STARTUP_EDITOR_KEY = "home.askedAboutStartupEditor";
@@ -164,6 +164,9 @@ export class ProjectsHome {
                 switch (message.command) {
                     case "openFolder":
                         vscode.commands.executeCommand("_projectManager.openFolderWelcome");
+                        break;
+                    case "cloneRepository":
+                        vscode.commands.executeCommand("git.clone");
                         break;
                     case "listProjects":
                         vscode.commands.executeCommand("projectManager.listProjects");
@@ -274,6 +277,19 @@ export class ProjectsHome {
             showMore: l10n.t("Show all ({0})"),
             showLess: l10n.t("Show less"),
             pinnedBadge: l10n.t("Pinned"),
+            greetingMorning: l10n.t("Good morning"),
+            greetingAfternoon: l10n.t("Good afternoon"),
+            greetingEvening: l10n.t("Good evening"),
+            greetingNight: l10n.t("Working late"),
+            subtitle: l10n.t("Pick up where you left off, or start something new."),
+            quickActions: l10n.t("Quick actions"),
+            openFolderDescription: l10n.t("Open a folder from your computer"),
+            cloneRepository: l10n.t("Clone Repository..."),
+            cloneRepositoryDescription: l10n.t("Get a project from Git"),
+            listProjectsDescription: l10n.t("Search every saved and detected project"),
+            settingsDescription: l10n.t("Startup, theme and automatic tags"),
+            continueTitle: l10n.t("Continue where you left off"),
+            openProject: l10n.t("Open"),
             suggestedTags: l10n.t("Suggested tags: {0}"),
             acceptSuggestions: l10n.t("Accept suggested tags"),
             credits: l10n.t("Based on Project Manager by Alessandro Fragnani")

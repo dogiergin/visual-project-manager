@@ -64,6 +64,10 @@ export class SidebarFilter {
         SidebarFilter.suggestionProvider = provider;
     }
 
+    public static getSuggestions(project: Project): string[] {
+        return SidebarFilter.suggestionProvider(project);
+    }
+
     /** Only the free text part. Tags are already handled by the existing storage queries. */
     public static matchesText(project: Project): boolean {
         if (!SidebarFilter.hasQuery()) {

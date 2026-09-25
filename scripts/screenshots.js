@@ -72,6 +72,11 @@ const strings = {
     show: "Show", showCount: "Number of projects to show in {0}", all: "All", showMore: "Show all ({0})",
     showLess: "Show less", pinnedBadge: "Pinned",
     suggestedTags: "Suggested tags: {0}", acceptSuggestions: "Accept suggested tags",
+    greetingMorning: "Good morning", greetingAfternoon: "Good afternoon", greetingEvening: "Good evening", greetingNight: "Working late",
+    subtitle: "Pick up where you left off, or start something new.", quickActions: "Quick actions",
+    openFolderDescription: "Open a folder from your computer", cloneRepository: "Clone Repository...",
+    cloneRepositoryDescription: "Get a project from Git", listProjectsDescription: "Search every saved and detected project",
+    settingsDescription: "Startup, theme and automatic tags", continueTitle: "Continue where you left off", openProject: "Open",
     credits: "Based on Project Manager by Alessandro Fragnani"
 };
 
@@ -104,7 +109,8 @@ const themes = {
 // ---------------------------------------------------------------- shots
 
 const shots = [
-    { file: "projects-page-dark.png", theme: "dark", state: {} },
+    { file: "projects-page-dark.png", theme: "dark", state: {}, height: 980 },
+    { file: "projects-page-loading.png", theme: "dark", state: {}, loading: true },
     { file: "projects-page-light.png", theme: "light", pageTheme: "vscode", state: {} },
     { file: "projects-page-search.png", theme: "dark", state: { query: "#da" } },
     { file: "projects-page-high-contrast.png", theme: "highContrast", state: { selectedTags: [ "Python" ] } }
@@ -124,7 +130,7 @@ for (const shot of shots) {
         getState: () => (${JSON.stringify(shot.state)}),
         setState() { },
         postMessage(message) {
-            if (message.type === "ready") {
+            if (message.type === "ready" && !${!!shot.loading}) {
                 setTimeout(() => window.postMessage({ type: "data", data: ${JSON.stringify({ ...data, theme: shot.pageTheme || data.theme })} }, "*"));
             }
         }
@@ -137,7 +143,7 @@ for (const shot of shots) {
     fs.writeFileSync(page, html);
     execFileSync(browser, [
         "--headless=new", "--disable-gpu", "--hide-scrollbars", "--allow-file-access-from-files",
-        "--window-size=1000,760", `--screenshot=${path.join(output, shot.file)}`, pathToFileURL(page).href
+        `--window-size=1000,${shot.height || 760}`, `--screenshot=${path.join(output, shot.file)}`, pathToFileURL(page).href
     ], { stdio: "ignore" });
     console.log(`images/screenshots/${shot.file}`);
 }

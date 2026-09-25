@@ -54,5 +54,18 @@
     "Accept suggested tags": "Önerilen etiketleri kabul et",
     "Learn More": "Daha Fazla Bilgi",
     "Ollaya is not running, so project categories are suggested with the fallback rules. Start the Ollaya app, or run `ollaya run laya` in a terminal.": "Ollaya çalışmıyor, bu yüzden proje kategorileri yedek kurallarla öneriliyor. Ollaya uygulamasını başlatın ya da bir terminalde `ollaya run laya` çalıştırın.",
-    "Invalid tag decisions file: {0}": "Geçersiz etiket kararları dosyası: {0}"
+    "Invalid tag decisions file: {0}": "Geçersiz etiket kararları dosyası: {0}",
+    "Good morning": "Günaydın",
+    "Good afternoon": "İyi günler",
+    "Good evening": "İyi akşamlar",
+    "Working late": "Geç saatlere kadar çalışıyorsun",
+    "Pick up where you left off, or start something new.": "Kaldığın yerden devam et ya da yeni bir şeye başla.",
+    "Quick actions": "Hızlı işlemler",
+    "Open a folder from your computer": "Bilgisayarından bir klasör aç",
+    "Clone Repository...": "Depo Klonla...",
+    "Get a project from Git": "Git'ten bir proje al",
+    "Search every saved and detected project": "Kayıtlı ve bulunan tüm projelerde ara",
+    "Startup, theme and automatic tags": "Açılış, tema ve otomatik etiketler",
+    "Continue where you left off": "Kaldığın yerden devam et",
+    "Open": "Aç"
 }

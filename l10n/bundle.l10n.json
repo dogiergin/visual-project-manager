@@ -93,5 +93,18 @@
     "Accept suggested tags": "Accept suggested tags",
     "Learn More": "Learn More",
     "Ollaya is not running, so project categories are suggested with the fallback rules. Start the Ollaya app, or run `ollaya run laya` in a terminal.": "Ollaya is not running, so project categories are suggested with the fallback rules. Start the Ollaya app, or run `ollaya run laya` in a terminal.",
-    "Invalid tag decisions file: {0}": "Invalid tag decisions file: {0}"
+    "Invalid tag decisions file: {0}": "Invalid tag decisions file: {0}",
+    "Good morning": "Good morning",
+    "Good afternoon": "Good afternoon",
+    "Good evening": "Good evening",
+    "Working late": "Working late",
+    "Pick up where you left off, or start something new.": "Pick up where you left off, or start something new.",
+    "Quick actions": "Quick actions",
+    "Open a folder from your computer": "Open a folder from your computer",
+    "Clone Repository...": "Clone Repository...",
+    "Get a project from Git": "Get a project from Git",
+    "Search every saved and detected project": "Search every saved and detected project",
+    "Startup, theme and automatic tags": "Startup, theme and automatic tags",
+    "Continue where you left off": "Continue where you left off",
+    "Open": "Open"
 }

@@ -75,15 +75,18 @@
 				{
 					"type": "webview",
 					"id": "projectsExplorerSearch",
-					"name": "%projectManager.views.search.name%"
+					"name": "%projectManager.views.search.name%",
+					"initialSize": 1
 				},
 				{
 					"id": "projectsExplorerPinned",
-					"name": "%projectManager.views.pinned.name%"
+					"name": "%projectManager.views.pinned.name%",
+					"initialSize": 2
 				},
 				{
 					"id": "projectsExplorerFavorites",
-					"name": "%projectManager.views.favorites.name%"
+					"name": "%projectManager.views.favorites.name%",
+					"initialSize": 5
 				},
 				{
 					"id": "projectsExplorerGit",
@@ -142,7 +145,7 @@
 			{
 				"command": "projectManager.saveProject",
 				"title": "%projectManager.commands.saveProject.title%",
-				"icon": "$(save)"
+				"icon": "$(add)"
 			},
 			{
 				"command": "projectManager.listProjects",
@@ -385,7 +388,8 @@
 			},
 			{
 				"command": "projectManager.editTagDecisions",
-				"title": "%projectManager.commands.editTagDecisions.title%"
+				"title": "%projectManager.commands.editTagDecisions.title%",
+				"icon": "$(sparkle)"
 			},
 			{
 				"command": "projectManager.refreshAutoTags",
@@ -542,48 +546,43 @@
 			"view/title": [
 				{
 					"command": "projectManager.openHome",
-					"when": "view == projectsExplorerFavorites",
-					"group": "navigation@0"
-				},
-				{
-					"command": "projectManager.clearSideBarFilter",
-					"when": "view =~ /projectsExplorer(Pinned|Favorites)/ && projectManager.sideBarFilterActive",
-					"group": "navigation@1"
-				},
-				{
-					"command": "projectManager.openHome",
-					"when": "view == projectsExplorerPinned",
+					"when": "view =~ /projectsExplorer(Pinned|Favorites)/",
 					"group": "navigation@0"
 				},
 				{
 					"command": "projectManager.saveProject",
 					"when": "view == projectsExplorerFavorites",
-					"group": "navigation@10"
-				},
-				{
-					"command": "projectManager.editProjects",
-					"when": "view == projectsExplorerFavorites",
-					"group": "navigation@11"
+					"group": "navigation@1"
 				},
 				{
 					"command": "_projectManager.viewAsTags#sideBarFavorites",
 					"when": "view == projectsExplorerFavorites && projectManager.viewAsList",
-					"group": "navigation@12"
+					"group": "navigation@2"
 				},
 				{
 					"command": "_projectManager.viewAsList#sideBarFavorites",
 					"when": "view == projectsExplorerFavorites && !projectManager.viewAsList",
-					"group": "navigation@13"
+					"group": "navigation@2"
+				},
+				{
+					"command": "projectManager.clearSideBarFilter",
+					"when": "view =~ /projectsExplorer(Pinned|Favorites)/ && projectManager.sideBarFilterActive",
+					"group": "navigation@3"
 				},
 				{
 					"command": "projectManager.listFavoriteProjects#sideBarFavorites",
 					"when": "view == projectsExplorerFavorites",
-					"group": "navigation@14"
+					"group": "0_projects@1"
 				},
 				{
 					"command": "projectManager.filterProjectsByTag#sideBar",
 					"when": "view == projectsExplorerFavorites",
-					"group": "navigation@14"
+					"group": "0_projects@2"
+				},
+				{
+					"command": "projectManager.editProjects",
+					"when": "view == projectsExplorerFavorites",
+					"group": "0_projects@3"
 				},
 				{
 					"submenu": "projectManager.sideBar.favorites.title",
@@ -591,14 +590,24 @@
 					"group": "1_projectManager"
 				},
 				{
+					"command": "projectManager.editTagDecisions",
+					"when": "view == projectsExplorerFavorites",
+					"group": "2_tags@1"
+				},
+				{
+					"command": "projectManager.refreshAutoTags",
+					"when": "view == projectsExplorerFavorites",
+					"group": "2_tags@2"
+				},
+				{
 					"command": "projectManager.openSettings#sideBarFavorites",
 					"when": "view == projectsExplorerFavorites",
-					"group": "2_projectManager"
+					"group": "3_projectManager@1"
 				},
 				{
 					"command": "projectManager.showGitWelcome",
 					"when": "view == projectsExplorerFavorites && projectManager.hiddenGitWelcome",
-					"group": "2_projectManager"
+					"group": "3_projectManager@2"
 				},
 				{
 					"command": "projectManager.listVSCodeProjects#sideBarVSCode",

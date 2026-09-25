@@ -81,6 +81,13 @@ export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | Ta
         return projects.filter(project => matching.has(project.label));
     }
 
+    private tagsOf(name: string): { tags: string[]; suggestedTags: string[] } {
+        const project = this.projectSource.getProjects().find(item => item.name === name);
+        return project
+            ? { tags: project.tags, suggestedTags: SidebarFilter.getSuggestions(project) }
+            : { tags: [], suggestedTags: [] };
+    }
+
     private markPinned(node: ProjectNode): ProjectNode {
         if (this.projectSource.isPinned(node.label)) {
             node.contextValue = PINNED_PROJECT_NODE_KIND;
@@ -132,7 +139,8 @@ export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | Ta
                         iconFavorites, {
                             name: prj.label,
                             path: projectPath,
-                            detail: gitBranch
+                            detail: gitBranch,
+                            ...this.tagsOf(prj.label)
                         }, {
                             command: "_projectManager.open",
                             title: "",
@@ -220,7 +228,8 @@ export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | Ta
                         iconFavorites, {
                             name: prj.label,
                             path: projectPath,
-                            detail: gitBranch
+                            detail: gitBranch,
+                            ...this.tagsOf(prj.label)
                         },
                         {
                             command: "_projectManager.open",

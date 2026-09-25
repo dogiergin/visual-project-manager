@@ -67,11 +67,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const autoTagger = new AutoTagger();
     SidebarFilter.setSuggestionProvider(project => autoTagger.getSuggestions(PathUtils.expandHomePath(project.rootPath), project.tags));
-    context.subscriptions.push(autoTagger.onDidChange(() => {
-        if (SidebarFilter.hasQuery()) {
-            providerManager.refreshStorageTreeView();
-        }
-    }));
+    // the suggested tags are displayed (and searchable) in the Side Bar
+    context.subscriptions.push(autoTagger.onDidChange(() => providerManager.refreshStorageTreeView()));
     const projectActions = new ProjectActions(projectStorage, providerManager, autoTagger);
     const projectsHome = new ProjectsHome(projectStorage, providerManager, projectActions, autoTagger);
     new SearchViewProvider(projectStorage, providerManager);

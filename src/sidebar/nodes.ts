@@ -12,6 +12,8 @@ export interface ProjectPreview {
     name: string;
     path: string;
     detail?: string;
+    tags?: string[];          // displayed after the name
+    suggestedTags?: string[]; // automatic tags not accepted yet
 }
 
 export class ProjectNode extends TreeItem {
@@ -37,10 +39,17 @@ export class ProjectNode extends TreeItem {
             path: preview.path
         });
 
+        const tags = preview.tags ?? [];
+        const suggested = preview.suggestedTags ?? [];
+        const tagsText = [ ...tags.map(tag => `#${tag}`), ...suggested.map(tag => `✨${tag}`) ].join(" ");
+
         const tooltipIcon = getIconDetailsFromProjectPath(preview.path);
         this.tooltip = new MarkdownString(
-            `${label}\n\n_${preview.path}_\n\n${tooltipIcon.icon} ${tooltipIcon.title}`, true);
-        this.description = preview.detail;
+            `**${label}**\n\n_${preview.path}_\n\n${tooltipIcon.icon} ${tooltipIcon.title}` +
+            (preview.detail ? `\n\n$(git-branch) ${preview.detail}` : "") +
+            (tags.length > 0 ? `\n\n$(tag) ${tags.join(", ")}` : "") +
+            (suggested.length > 0 ? `\n\n$(sparkle) ${suggested.join(", ")}` : ""), true);
+        this.description = [ preview.detail, tagsText ].filter(Boolean).join("  ·  ") || undefined;
     }
 
     private getIconPath(icon: string, projectPath: string): string | IconPath {

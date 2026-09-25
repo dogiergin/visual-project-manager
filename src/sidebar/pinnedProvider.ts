@@ -45,7 +45,8 @@ export class PinnedProvider implements vscode.TreeDataProvider<ProjectNode> {
 
         const showGitBranch = vscode.workspace.getConfiguration("projectManager").get<string>("git.showBranchName", "never");
 
-        const projects = sortProjects(this.getVisibleProjects().map(project => ({
+        const visible = this.getVisibleProjects();
+        const projects = sortProjects(visible.map(project => ({
             label: project.name,
             description: project.rootPath,
             profile: project.profile
@@ -65,7 +66,9 @@ export class PinnedProvider implements vscode.TreeDataProvider<ProjectNode> {
             const node = new ProjectNode(prj.label, vscode.TreeItemCollapsibleState.None, icon, {
                 name: prj.label,
                 path: projectPath,
-                detail: gitBranch
+                detail: gitBranch,
+                tags: visible.find(project => project.name === prj.label)?.tags ?? [],
+                suggestedTags: SidebarFilter.getSuggestions(visible.find(project => project.name === prj.label))
             }, {
                 command: "_projectManager.open",
                 title: "",

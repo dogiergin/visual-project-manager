@@ -76,11 +76,20 @@
 
     const app = document.getElementById("app");
 
-    const toolbar = el("div", { class: "toolbar", role: "toolbar", "aria-label": t.title }, [
-        toolbarButton("openFolder", "folder", t.openFolder),
-        toolbarButton("listProjects", "list", t.listProjects),
-        toolbarButton("openSettings", "gear", t.settings, true)
+    function greeting() {
+        const hour = new Date().getHours();
+        return hour < 5 ? t.greetingNight : hour < 12 ? t.greetingMorning : hour < 18 ? t.greetingAfternoon : t.greetingEvening;
+    }
+
+    // large, labelled buttons: what they do is written on them
+    const quickActions = el("nav", { class: "quick-actions", "aria-label": t.quickActions }, [
+        actionCard("openFolder", "folder", t.openFolder, t.openFolderDescription),
+        actionCard("cloneRepository", "git", t.cloneRepository, t.cloneRepositoryDescription),
+        actionCard("listProjects", "list", t.listProjects, t.listProjectsDescription),
+        actionCard("openSettings", "gear", t.settings, t.settingsDescription)
     ]);
+
+    const continueSlot = el("div", { class: "continue-slot" });
 
     const searchInput = el("input", {
         id: "search",
@@ -105,8 +114,16 @@
     const lists = el("div", { id: "lists", class: "lists" });
     const live = el("div", { class: "visually-hidden", role: "status", "aria-live": "polite", "aria-atomic": "true" });
 
-    app.append(el("main", { class: "home" }, [
-        el("header", { class: "header" }, [ el("h1", { text: t.title }), toolbar ]),
+    app.append(el("main", { class: "home", "aria-busy": "true" }, [
+        el("header", { class: "hero" }, [
+            el("div", { class: "hero-text" }, [
+                el("p", { class: "eyebrow", text: t.title }),
+                el("h1", { text: greeting() }),
+                el("p", { class: "subtitle", text: t.subtitle })
+            ]),
+            continueSlot
+        ]),
+        quickActions,
         search,
         hint,
         chips,
@@ -118,14 +135,55 @@
         ])
     ]));
 
-    function toolbarButton(command, iconName, label, iconOnly) {
+    function actionCard(command, iconName, label, description) {
         return el("button", {
             type: "button",
-            class: iconOnly ? "tool icon-only" : "tool",
-            title: label,
-            "aria-label": label,
+            class: "action-card",
             onclick: () => post({ type: "command", command })
-        }, [ el("span", { html: icon(iconName) }), iconOnly ? undefined : el("span", { text: label }) ]);
+        }, [
+            el("span", { class: "action-card-icon", html: icon(iconName) }),
+            el("span", { class: "action-card-text" }, [
+                el("span", { class: "action-card-label", text: label }),
+                el("span", { class: "action-card-description", text: description })
+            ])
+        ]);
+    }
+
+    // the most recent project, as a large "continue" card in the header
+    function renderContinue() {
+        continueSlot.replaceChildren();
+        const project = !isFiltering() && state.loaded ? state.data.recent[ 0 ] : undefined;
+        if (!project) {
+            return;
+        }
+        continueSlot.append(el("section", { class: "continue", "aria-labelledby": "heading-continue" }, [
+            el("h2", { id: "heading-continue", class: "continue-title" }, [ el("span", { html: icon("clock") }), el("span", { text: t.continueTitle }) ]),
+            el("div", { class: "continue-body" }, [
+                el("span", { class: "continue-folder", html: folder(project.kind) }),
+                el("span", { class: "continue-text" }, [
+                    el("span", { class: "continue-name", text: project.name }),
+                    el("span", { class: "continue-path", title: project.displayPath, text: project.displayPath }),
+                    allTags(project).length > 0 ? el("span", { class: "continue-tags", text: allTags(project).map(tag => `#${tag}`).join("  ") }) : undefined
+                ])
+            ]),
+            el("div", { class: "continue-buttons" }, [
+                el("button", {
+                    type: "button",
+                    class: "button primary",
+                    "data-key": `${project.rootPath}|continue`,
+                    "data-nav": "tile",
+                    "aria-label": `${t.openProject}: ${project.name}`,
+                    onclick: event => open(project, event.ctrlKey || event.metaKey),
+                    onkeydown: event => onTileKeyDown(event, project)
+                }, [ el("span", { html: icon("play") }), el("span", { text: t.openProject }) ]),
+                el("button", {
+                    type: "button",
+                    class: "button secondary",
+                    "aria-label": `${t.openInNewWindow}: ${project.name}`,
+                    onclick: () => open(project, true)
+                }, [ el("span", { html: icon("newWindow") }), el("span", { text: t.openInNewWindow }) ])
+            ])
+        ]));
     }
 
     // ---------------------------------------------------------------- rendering
@@ -180,18 +238,21 @@
 
     function renderLists() {
         const focusedKey = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.key : undefined;
+        renderContinue();
         lists.replaceChildren();
+        app.querySelector(".home").setAttribute("aria-busy", String(!state.loaded));
 
         if (isFiltering()) {
             lists.append(section("results", t.results, filtered(), t.noResults));
         } else {
-            lists.append(section("pinned", t.pinned, state.data.pinned, t.noPinned));
-            lists.append(section("recent", t.recent, state.data.recent, t.noRecent));
+            lists.append(section("pinned", t.pinned, state.data.pinned, t.noPinned, "pinFilled"));
+            // the most recent one is already in the "continue" card
+            lists.append(section("recent", t.recent, state.data.recent.slice(1), t.noRecent, "clock"));
         }
 
         updateRovingTabStop();
         if (focusedKey) {
-            const target = lists.querySelector(`[data-key="${CSS.escape(focusedKey)}"]`) || tiles()[ 0 ];
+            const target = app.querySelector(`[data-key="${CSS.escape(focusedKey)}"]`) || tiles()[ 0 ];
             if (target) {
                 target.focus();
             } else {
@@ -200,7 +261,15 @@
         }
     }
 
-    function section(id, title, projects, emptyText) {
+    function skeleton(count) {
+        const grid = el("ul", { class: "grid skeleton", "aria-hidden": "true" });
+        for (let index = 0; index < count; index++) {
+            grid.append(el("li", { class: "tile" }, [ el("span", { class: "skeleton-folder" }), el("span", { class: "skeleton-line" }) ]));
+        }
+        return grid;
+    }
+
+    function section(id, title, projects, emptyText, iconName) {
         const headingId = `heading-${id}`;
         const limit = id === "results" ? 0 : state.data.limits[ id ];
         const expanded = !!state.expanded[ id ];
@@ -210,7 +279,11 @@
         visible.forEach(project => grid.append(tile(project)));
 
         const header = el("div", { class: "section-header" }, [
-            el("h2", { id: headingId }, [ el("span", { text: title }), el("span", { class: "count", text: state.loaded ? `${projects.length}` : "" }) ]),
+            el("h2", { id: headingId }, [
+                iconName ? el("span", { class: "section-icon", html: icon(iconName) }) : undefined,
+                el("span", { text: title }),
+                el("span", { class: "count", text: state.loaded ? `${projects.length}` : "" })
+            ]),
             id === "results" ? undefined : limitPicker(id, title)
         ]);
 
@@ -229,7 +302,9 @@
 
         return el("section", { class: `section section-${id}`, "aria-labelledby": headingId }, [
             header,
-            projects.length > 0 ? grid : el("p", { class: "empty", text: state.loaded ? emptyText : "" }),
+            !state.loaded ? skeleton(id === "pinned" ? 3 : 6)
+                : projects.length > 0 ? grid
+                    : el("p", { class: "empty" }, [ el("span", { class: "empty-icon", html: icon(iconName || "search") }), el("span", { text: emptyText }) ]),
             more
         ]);
     }
@@ -377,7 +452,7 @@
     // ---------------------------------------------------------------- keyboard
 
     function tiles() {
-        return [ ...lists.querySelectorAll('[data-nav="tile"]') ];
+        return [ ...app.querySelectorAll('[data-nav="tile"]') ];
     }
 
     function updateRovingTabStop() {
