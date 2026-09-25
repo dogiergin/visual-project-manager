@@ -18,7 +18,7 @@ Il vous suffit d'ajouter les lignes ci-dessous dans vos `Paramètres utilisateur
 
 ```json
     "remote.extensionKind": {
-        "alefragnani.project-manager": [
+        "emredogukanergin.visual-project-manager": [
             "workspace"
         ]
     },

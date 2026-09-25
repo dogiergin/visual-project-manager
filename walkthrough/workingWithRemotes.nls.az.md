@@ -18,7 +18,7 @@ Sadəcə aşağıdakı sətirləri `İstifadəçi parametrlərinizə` əlavə et
 
 ```json
     "remote.extensionKind": {
-        "alefragnani.project-manager": [
+        "emredogukanergin.visual-project-manager": [
             "workspace"
         ]
     },

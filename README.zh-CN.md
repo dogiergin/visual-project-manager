@@ -1,6 +1,6 @@
-[![](https://vsmarketplacebadges.dev/version-short/alefragnani.project-manager.svg)](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
-[![](https://vsmarketplacebadges.dev/downloads-short/alefragnani.project-manager.svg)](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
-[![](https://vsmarketplacebadges.dev/rating-short/alefragnani.project-manager.svg)](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
+[![](https://vsmarketplacebadges.dev/version-short/emredogukanergin.visual-project-manager.svg)](https://marketplace.visualstudio.com/items?itemName=emredogukanergin.visual-project-manager)
+[![](https://vsmarketplacebadges.dev/downloads-short/emredogukanergin.visual-project-manager.svg)](https://marketplace.visualstudio.com/items?itemName=emredogukanergin.visual-project-manager)
+[![](https://vsmarketplacebadges.dev/rating-short/emredogukanergin.visual-project-manager.svg)](https://marketplace.visualstudio.com/items?itemName=emredogukanergin.visual-project-manager)
 
 <p align="center">
   <br />
@@ -177,7 +177,7 @@ _It just works_
 
 ```json
   "remote.extensionKind": {
-    "alefragnani.project-manager": [
+    "emredogukanergin.visual-project-manager": [
       "workspace"
     ]
   },
@@ -368,17 +368,17 @@ _It just works_
 
 ```json
   "extensionDependencies": [
-    "alefragnani.project-manager"
+    "emredogukanergin.visual-project-manager"
   ],
 ```
 
-然后，在源代码中通过 `vscode.extensions.getExtension("alefragnani.project-manager")` 获取扩展实例，以便使用它公开的方法。
+然后，在源代码中通过 `vscode.extensions.getExtension("emredogukanergin.visual-project-manager")` 获取扩展实例，以便使用它公开的方法。
 
 ```ts
 import { ProjectManagerPublicApi } from './api/projectManager/api';
 
 async function useProjectManagerApi() {
-    const projectManagerApi = <ProjectManagerPublicApi>vscode.extensions.getExtension('alefragnani.project-manager')?.exports;
+    const projectManagerApi = <ProjectManagerPublicApi>vscode.extensions.getExtension('emredogukanergin.visual-project-manager')?.exports;
 
     await projectManagerApi.saveProject("My Project", "/path/to/project", ["work"], "Default");
 }

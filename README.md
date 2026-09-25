@@ -253,7 +253,7 @@ You just have to add the lines below on your `User Settings`.
 
 ```json
     "remote.extensionKind": {
-        "alefragnani.project-manager": [
+        "emredogukanergin.visual-project-manager": [
             "workspace"
         ]
     },
@@ -457,11 +457,11 @@ First, you must add an `extensionDependencies` entry in your `package.json` file
 
 ```json
   "extensionDependencies": [
-    "alefragnani.project-manager"
+    "emredogukanergin.visual-project-manager"
   ],
 ```
 
-Then, retrieve the extension instance with `vscode.extensions.getExtension("alefragnani.project-manager")` in your source code, to be able to use the methods that the extension exposes.
+Then, retrieve the extension instance with `vscode.extensions.getExtension("emredogukanergin.visual-project-manager")` in your source code, to be able to use the methods that the extension exposes.
 
 ```ts
 import { ProjectManagerPublicApi } from './api/projectManager/api';

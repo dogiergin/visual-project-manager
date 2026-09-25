@@ -1,6 +1,6 @@
 # Visual Project Manager
 
-## [1.0.0] - Unreleased
+## [1.0.0] - 2026-09-25
 First release of **Visual Project Manager**, a fork of [Project Manager 13.1.1](https://github.com/alefragnani/vscode-project-manager) by Alessandro Fragnani.
 
 ### Added
