@@ -194,6 +194,39 @@ suite("ProjectStorage", () => {
         fs.unlinkSync(filename);
     });
 
+    test("pinned projects are saved, loaded and unpinned", () => {
+        const filename = createTempFilename();
+        const storage = new ProjectStorage(filename);
+
+        storage.push("A", "/path/a");
+        storage.push("B", "/path/b");
+        assert.strictEqual(storage.hasPinnedProjects(), false);
+
+        assert.strictEqual(storage.setPinned("b", true), true);
+        assert.strictEqual(storage.setPinned("missing", true), false);
+        storage.save();
+
+        // only pinned projects get the new field, so the file stays compatible with Project Manager
+        const saved = JSON.parse(fs.readFileSync(filename).toString());
+        assert.strictEqual("pinned" in saved[0], false);
+        assert.strictEqual(saved[1].pinned, true);
+
+        const loadedStorage = new ProjectStorage(filename);
+        assert.strictEqual(loadedStorage.load(), "");
+        assert.ok(loadedStorage.isPinned("B"));
+        assert.deepStrictEqual(loadedStorage.getPinnedProjects().map(project => project.name), [ "B" ]);
+
+        loadedStorage.toggleEnabled("B");
+        assert.strictEqual(loadedStorage.hasPinnedProjects(), false, "disabled projects are not listed as pinned");
+        loadedStorage.toggleEnabled("B");
+
+        loadedStorage.setPinned("B", false);
+        assert.strictEqual(loadedStorage.isPinned("B"), false);
+        assert.strictEqual("pinned" in loadedStorage.getProjects()[1], false);
+
+        fs.unlinkSync(filename);
+    });
+
     test("load migrates v1 format (label/description) to v2 projects", () => {
         const filename = createTempFilename();
         const v1Items = [

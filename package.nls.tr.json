@@ -1,0 +1,17 @@
+{
+    "projectManager.views.search.name": "Ara",
+    "projectManager.views.pinned.name": "Sabitlenenler",
+    "projectManager.viewsWelcome.pinned.contents": "En çok kullandığınız projeleri sabitleyin; Kenar Çubuğunun en üstünde ve Projeler sayfasında burada kalsınlar.\n[Projeler Sayfasını Aç](command:projectManager.openHome)",
+    "projectManager.commands.openHome.title": "Project Manager: Projeler Sayfasını Aç",
+    "projectManager.commands.searchSideBar.title": "Project Manager: Kenar Çubuğunda Proje Ara",
+    "projectManager.commands.clearSideBarFilter.title": "Project Manager: Kenar Çubuğu Filtresini Temizle",
+    "projectManager.commands.pinProject.title": "Sabitle",
+    "projectManager.commands.unpinProject.title": "Sabitlemeyi Kaldır",
+    "projectManager.configuration.home.showOnStartup.description": "Projeler sayfasının açılışta ne zaman gösterileceği. VS Code Hoş Geldiniz sayfasını gizlemek için `#workbench.startupEditor#` değeri `none` olmalıdır (bu eklenti yüklüyken varsayılan).",
+    "projectManager.configuration.home.showOnStartup.enumDescriptions.emptyWindow": "Yalnızca pencerede açık klasör veya çalışma alanı yokken",
+    "projectManager.configuration.home.showOnStartup.enumDescriptions.always": "Her pencere açıldığında",
+    "projectManager.configuration.home.showOnStartup.enumDescriptions.never": "Hiçbir zaman. Bunun yerine `Projeler Sayfasını Aç` komutunu kullanın",
+    "projectManager.configuration.home.recentProjectsLimit.description": "Projeler sayfasında gösterilecek en fazla son açılan yerel proje sayısı",
+    "projectManager.activitybar.title": "Proje Yöneticisi",
+    "projectManager.views.favorites.name": "Favoriler"
+}

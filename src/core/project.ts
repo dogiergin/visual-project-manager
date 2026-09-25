@@ -10,6 +10,7 @@ export interface Project {
     tags: string[];   // the tags associated to the project
     enabled: boolean; // the project should be displayed in the project list
     profile: string;  // the profile to assign to the project
+    pinned?: boolean; // the project is pinned to the top of the Projects Home and the Side Bar
 }
 
 export function createProject(name: string, rootPath: string): Project {

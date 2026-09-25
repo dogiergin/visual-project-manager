@@ -1,46 +1,72 @@
-[![](https://vsmarketplacebadges.dev/version-short/alefragnani.project-manager.svg)](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
-[![](https://vsmarketplacebadges.dev/downloads-short/alefragnani.project-manager.svg)](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
-[![](https://vsmarketplacebadges.dev/rating-short/alefragnani.project-manager.svg)](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
+# Visual Project Manager
 
-<p align="center">
-  <br />
-  <a title="Learn more about Project Manager" href="https://github.com/alefragnani/vscode-project-manager"><img src="https://raw.githubusercontent.com/alefragnani/vscode-project-manager/master/images/vscode-project-manager-logo-readme.png" alt="Project Manager Logo" width="70%" /></a>
-</p>
+A **Projects page** that opens instead of the classic Welcome page, with **pinned** and **recently opened** projects, search by **name** or **#tag**, and a more accessible **Side Bar**.
 
-English | [简体中文](README.zh-CN.md)
+> **Visual Project Manager is a fork of [Project Manager](https://github.com/alefragnani/vscode-project-manager) by [Alessandro Fragnani](https://github.com/alefragnani).**
+> All of the original features (Favorites, Tags, auto-detection of Git/Mercurial/SVN/VS Code/any folders, Status Bar, Profiles, Remotes) come from that project, and it is distributed under the same [GPLv3 license](LICENSE.md). Many thanks to Alessandro and all Project Manager contributors.
 
-# What's new in Project Manager 13.1
+## What's new in this fork
 
-* Improved **Tags** support
-* Improved **auto-detected projects** support
-* Fully Open Source again
-* Adds **Profile** support
-* Highlights the current project in the Side Bar
-* Published to **Open VSX**
-* Adds **Getting Started / Walkthrough**
-* Organize your projects with **Tags**
-* Adds **Virtual Workspaces** support
-* Adds **Workspace Trust** support
+### Projects page
+* Opens on startup instead of the VS Code **Welcome** page (setting `projectManager.home.showOnStartup`: `emptyWindow` (default), `always` or `never`)
+* **Pinned** projects at the top, followed by the **Recent** local projects (from the VS Code _Open Recent_ history, local folders and workspaces only)
+* One search box: type a project name, or `#tag` to filter by tag. Tag chips can also be used as a filter
+* Pin/unpin, open in a new window and edit tags right from each row
+* Command `Project Manager: Open Projects Page` (`Ctrl+Alt+H` / `Cmd+Alt+H`)
 
-# Support
+### Side Bar
+* A new **Pinned** view at the top of the Side Bar
+* A new **Search** view, which filters the _Pinned_ and _Favorites_ views by name, `#tag` and tag chips
+* Pin/unpin projects with the inline button, or from the context menu
 
-**Project Manager** is an extension created for **Visual Studio Code**. If you find it useful, please consider supporting it.
+### Accessibility
+* Everything works with the keyboard only:
 
-<table align="center" width="60%" border="0">
-  <tr>
-    <td>
-      <a title="Paypal" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=EP57F3B6FXKTU&lc=US&item_name=Alessandro%20Fragnani&item_number=vscode%20extensions&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif"/></a>
-    </td>
-    <td>
-      <a title="GitHub Sponsors" href="https://github.com/sponsors/alefragnani"><img src="https://raw.githubusercontent.com/alefragnani/oss-resources/master/images/button-become-a-sponsor-rounded-small.png"/></a>
-    </td>
-    <td>
-      <a title="Patreon" href="https://www.patreon.com/alefragnani"><img src="https://raw.githubusercontent.com/alefragnani/oss-resources/master/images/button-become-a-patron-rounded-small.png"/></a>
-    </td>
-  </tr>
-</table>
+  | Key | Action |
+  |-----|--------|
+  | `/` | Focus the search box |
+  | `↑` `↓` / `Home` `End` | Move between projects |
+  | `←` `→` | Move between the actions of a project (new window, pin, tags) |
+  | `Enter` / `Ctrl+Enter` | Open the project / open it in a new window |
+  | `Esc` | Clear the search |
 
-# Project Manager
+* Proper labels and roles for screen readers, and the number of results is announced while you type
+* Colors come from the active theme, so light, dark and **High Contrast** themes are supported. Focus is always visible
+* Honors the _reduce motion_ preference of the operating system
+
+### Bundled with vscode-icons
+Installing **Visual Project Manager** also installs [vscode-icons](https://github.com/vscode-icons/vscode-icons) (an [Extension Pack](https://code.visualstudio.com/api/references/extension-manifest#extension-packs) dependency), created and maintained by the [vscode-icons team](https://github.com/vscode-icons/vscode-icons/graphs/contributors) and licensed under the [MIT License](https://github.com/vscode-icons/vscode-icons/blob/master/LICENSE). You can uninstall or disable it independently at any time.
+
+## Migrating from Project Manager
+* Both extensions register the same commands and settings, so **uninstall or disable Project Manager** before using Visual Project Manager
+* Your `projectManager.*` settings keep working, and your saved projects (`projects.json`) are copied automatically on the first run
+* Pinned projects are stored with an extra `"pinned": true` field in `projects.json`, which the original extension simply ignores
+
+## Credits
+
+* [Project Manager](https://github.com/alefragnani/vscode-project-manager) by Alessandro Fragnani - GPLv3. If you find this extension useful, please consider supporting the original author as well:
+
+  **Project Manager** is an extension created for **Visual Studio Code**. If you find it useful, please consider supporting it.
+
+  <table align="center" width="60%" border="0">
+    <tr>
+      <td>
+        <a title="Paypal" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=EP57F3B6FXKTU&lc=US&item_name=Alessandro%20Fragnani&item_number=vscode%20extensions&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif"/></a>
+      </td>
+      <td>
+        <a title="GitHub Sponsors" href="https://github.com/sponsors/alefragnani"><img src="https://raw.githubusercontent.com/alefragnani/oss-resources/master/images/button-become-a-sponsor-rounded-small.png"/></a>
+      </td>
+      <td>
+        <a title="Patreon" href="https://www.patreon.com/alefragnani"><img src="https://raw.githubusercontent.com/alefragnani/oss-resources/master/images/button-become-a-patron-rounded-small.png"/></a>
+      </td>
+    </tr>
+  </table>
+
+* [vscode-icons](https://github.com/vscode-icons/vscode-icons) by the vscode-icons team - MIT
+
+# Project Manager features
+
+> The sections below come from the original [Project Manager](https://github.com/alefragnani/vscode-project-manager) documentation and still apply to Visual Project Manager.
 
 It helps you to easily access your **projects**, no matter where they are located. _Don't miss those important projects anymore_. 
 
@@ -391,7 +417,7 @@ Then, retrieve the extension instance with `vscode.extensions.getExtension("alef
 import { ProjectManagerPublicApi } from './api/projectManager/api';
 
 async function useProjectManagerApi() {
-    const projectManagerApi = <ProjectManagerPublicApi>vscode.extensions.getExtension('alefragnani.project-manager')?.exports;
+    const projectManagerApi = <ProjectManagerPublicApi>vscode.extensions.getExtension('emredogukanergin.visual-project-manager')?.exports;
 
     await projectManagerApi.saveProject("My Project", "/path/to/project", ["work"], "Default");
 }
@@ -410,4 +436,9 @@ You should follow the official documentation to:
 
 # License
 
-[GPL-3.0 with VS Code Extension Host API Exception](LICENSE.md) &copy; Alessandro Fragnani
+[GPL-3.0 with VS Code Extension Host API Exception](LICENSE.md)
+
+* Original work &copy; Alessandro Fragnani ([Project Manager](https://github.com/alefragnani/vscode-project-manager))
+* Modifications &copy; Emre Doğukan Ergin and Visual Project Manager contributors
+
+See [NOTICE.md](NOTICE.md) for the third-party attributions.

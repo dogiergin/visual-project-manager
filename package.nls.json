@@ -120,5 +120,18 @@
     "projectManager.walkthroughs.exclusiveSideBar.title": "Exclusive Side Bar",
     "projectManager.walkthroughs.exclusiveSideBar.description": "An exclusive Side Bar with everything you need for great productivity.\n[Open Side Bar](command:_projectManager.openSideBar)",
     "projectManager.walkthroughs.workingWithRemotes.title": "Working with Remotes",
-    "projectManager.walkthroughs.workingWithRemotes.description": "The extension support [Remote Development](https://code.visualstudio.com/docs/remote/remote-overview) scenarios, and you may choose how to use it, depending on your needs."
+    "projectManager.walkthroughs.workingWithRemotes.description": "The extension support [Remote Development](https://code.visualstudio.com/docs/remote/remote-overview) scenarios, and you may choose how to use it, depending on your needs.",
+    "projectManager.views.search.name": "Search",
+    "projectManager.views.pinned.name": "Pinned",
+    "projectManager.viewsWelcome.pinned.contents": "Pin the projects you use the most to keep them here, at the top of the Side Bar and in the Projects page.\n[Open Projects Page](command:projectManager.openHome)",
+    "projectManager.commands.openHome.title": "Project Manager: Open Projects Page",
+    "projectManager.commands.searchSideBar.title": "Project Manager: Search Projects in Side Bar",
+    "projectManager.commands.clearSideBarFilter.title": "Project Manager: Clear Side Bar Filter",
+    "projectManager.commands.pinProject.title": "Pin",
+    "projectManager.commands.unpinProject.title": "Unpin",
+    "projectManager.configuration.home.showOnStartup.description": "When to display the Projects page on startup. To hide the VS Code Welcome page, `#workbench.startupEditor#` must be `none` (default while this extension is installed).",
+    "projectManager.configuration.home.showOnStartup.enumDescriptions.emptyWindow": "Only when the window has no folder or workspace opened",
+    "projectManager.configuration.home.showOnStartup.enumDescriptions.always": "Every time a window is opened",
+    "projectManager.configuration.home.showOnStartup.enumDescriptions.never": "Never. Use the `Open Projects Page` command instead",
+    "projectManager.configuration.home.recentProjectsLimit.description": "Maximum number of recently opened local projects displayed in the Projects page"
 }

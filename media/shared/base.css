@@ -1,0 +1,189 @@
+/*---------------------------------------------------------------------------------------------
+*  Copyright (c) Visual Project Manager contributors. All rights reserved.
+*  Licensed under the GPLv3 License. See License.md in the project root for license information.
+*--------------------------------------------------------------------------------------------*/
+
+/* Every color comes from the active VS Code theme, so light, dark and high contrast themes just work */
+:root {
+    --pm-fg: var(--vscode-foreground);
+    --pm-muted: var(--vscode-descriptionForeground);
+    --pm-bg: var(--vscode-editor-background);
+    --pm-hover: var(--vscode-list-hoverBackground);
+    --pm-focus: var(--vscode-focusBorder);
+    --pm-border: var(--vscode-widget-border, var(--vscode-contrastBorder, transparent));
+    --pm-hc-border: var(--vscode-contrastBorder, transparent);
+    --pm-hc-active: var(--vscode-contrastActiveBorder, transparent);
+    --pm-input-bg: var(--vscode-input-background);
+    --pm-input-fg: var(--vscode-input-foreground);
+    --pm-input-border: var(--vscode-input-border, var(--pm-hc-border));
+    --pm-chip-bg: var(--vscode-button-secondaryBackground, transparent);
+    --pm-chip-fg: var(--vscode-button-secondaryForeground, var(--pm-fg));
+    --pm-chip-active-bg: var(--vscode-button-background);
+    --pm-chip-active-fg: var(--vscode-button-foreground);
+    --pm-badge-bg: var(--vscode-badge-background);
+    --pm-badge-fg: var(--vscode-badge-foreground);
+    --pm-link: var(--vscode-textLink-foreground);
+    --pm-radius: 4px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    color: var(--pm-fg);
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+    line-height: 1.4;
+}
+
+button {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+.icon {
+    width: 16px;
+    height: 16px;
+    flex: none;
+}
+
+/* A visible focus indicator on every interactive element */
+:focus {
+    outline: none;
+}
+
+:focus-visible {
+    outline: 1px solid var(--pm-focus);
+    outline-offset: -1px;
+}
+
+body.vscode-high-contrast :focus-visible {
+    outline: 2px dashed var(--pm-hc-active);
+    outline-offset: -2px;
+}
+
+.visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Search box */
+.search {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search .icon-search {
+    position: absolute;
+    left: 8px;
+    color: var(--pm-muted);
+    pointer-events: none;
+    display: flex;
+}
+
+.search input {
+    width: 100%;
+    min-height: 28px;
+    padding: 4px 32px 4px 30px;
+    color: var(--pm-input-fg);
+    background: var(--pm-input-bg);
+    border: 1px solid var(--pm-input-border);
+    border-radius: var(--pm-radius);
+    font: inherit;
+}
+
+.search input:focus-visible {
+    outline: 1px solid var(--pm-focus);
+    outline-offset: -1px;
+}
+
+.search input::-webkit-search-cancel-button {
+    display: none;
+}
+
+.search .clear {
+    position: absolute;
+    right: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: var(--pm-radius);
+    color: var(--pm-muted);
+}
+
+.search .clear:hover {
+    background: var(--pm-hover);
+    color: var(--pm-fg);
+}
+
+.search .clear[hidden] {
+    display: none;
+}
+
+/* Tag chips */
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 24px;
+    padding: 2px 10px;
+    background: var(--pm-chip-bg);
+    color: var(--pm-chip-fg);
+    border: 1px solid var(--pm-hc-border);
+    border-radius: 12px;
+}
+
+.chip:hover {
+    filter: brightness(1.15);
+}
+
+.chip[aria-pressed="true"] {
+    background: var(--pm-chip-active-bg);
+    color: var(--pm-chip-active-fg);
+}
+
+body.vscode-high-contrast .chip[aria-pressed="true"] {
+    border-color: var(--pm-hc-active);
+    border-style: solid;
+    border-width: 2px;
+}
+
+.chip .check {
+    display: none;
+}
+
+.chip[aria-pressed="true"] .check {
+    display: inline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}

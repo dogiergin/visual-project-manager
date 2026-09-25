@@ -12,3 +12,5 @@ export enum ProjectNodeKind { NODE_KIND, NODE_PROJECT }
 export const NO_TAGS_DEFINED = '** no tags **';
 
 export enum ViewFavoritesAs { VIEW_AS_LIST, VIEW_AS_TAGS }
+
+export const PINNED_PROJECT_NODE_KIND = 'ProjectNodeKind.pinned';

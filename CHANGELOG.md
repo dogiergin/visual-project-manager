@@ -1,3 +1,24 @@
+# Visual Project Manager
+
+## [1.0.0] - Unreleased
+First release of **Visual Project Manager**, a fork of [Project Manager 13.1.1](https://github.com/alefragnani/vscode-project-manager) by Alessandro Fragnani.
+
+### Added
+- **Projects page**, opened on startup instead of the VS Code Welcome page, with **Pinned** and **Recent** (local) projects
+- Search projects by name or `#tag`, and filter by tag chips (Projects page and Side Bar)
+- **Pin** projects (saved in `projects.json` as `"pinned": true`)
+- **Pinned** and **Search** views in the Side Bar
+- Keyboard navigation, screen reader labels/announcements and High Contrast support for the new UI
+- Settings `projectManager.home.showOnStartup` and `projectManager.home.recentProjectsLimit`
+- Turkish translation for the new features
+- Installs [vscode-icons](https://github.com/vscode-icons/vscode-icons) as part of an Extension Pack
+- Copies `projects.json` from Project Manager on the first run
+
+### Changed
+- What's New is announced with a notification instead of opening a page on startup
+
+# Project Manager (original changelog)
+
 ## [13.1.1] - 2026-03-31
 ### Internal
 - Failed publishing on open-vsx (issue [#920](https://github.com/alefragnani/vscode-project-manager/issues/920))

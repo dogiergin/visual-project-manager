@@ -72,6 +72,32 @@ export class ProjectStorage {
         }
     }
 
+    public setPinned(name: string, pinned: boolean): boolean {
+        for (const element of this.projects) {
+            if (element.name.toLowerCase() === name.toLowerCase()) {
+                if (pinned) {
+                    element.pinned = true;
+                } else {
+                    delete element.pinned;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public isPinned(name: string): boolean {
+        return this.projects.some(element => element.pinned && element.name.toLowerCase() === name.toLowerCase());
+    }
+
+    public getPinnedProjects(): Project[] {
+        return this.getProjects().filter(project => project.enabled && project.pinned);
+    }
+
+    public hasPinnedProjects(): boolean {
+        return this.projects.some(project => project.enabled && project.pinned);
+    }
+
     public disabled(): Array<Project> | undefined {
         return this.projects.filter(project => !project.enabled);
     }
@@ -159,7 +185,8 @@ export class ProjectStorage {
                     paths: project.paths,
                     tags: project.tags,
                     enabled: project.enabled,
-                    profile: project.profile
+                    profile: project.profile,
+                    ...(project.pinned ? { pinned: true } : {})
                 }));
             }
 

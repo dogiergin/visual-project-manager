@@ -1,0 +1,55 @@
+/*---------------------------------------------------------------------------------------------
+*  Copyright (c) Visual Project Manager contributors. All rights reserved.
+*  Licensed under the GPLv3 License. See License.md in the project root for license information.
+*--------------------------------------------------------------------------------------------*/
+
+body {
+    background: transparent;
+}
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 6px 12px 8px 20px;
+}
+
+.chips {
+    gap: 4px;
+}
+
+.chip {
+    min-height: 22px;
+    padding: 1px 8px;
+    font-size: 0.95em;
+}
+
+.chips[hidden] {
+    display: none;
+}
+
+.status-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 0;
+    color: var(--pm-muted);
+    font-size: 0.9em;
+}
+
+.status-line:has(.summary:empty):has(.clear-filters[hidden]) {
+    display: none;
+}
+
+.link {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    color: var(--pm-link);
+    text-decoration: underline;
+}
+
+.link[hidden] {
+    display: none;
+}

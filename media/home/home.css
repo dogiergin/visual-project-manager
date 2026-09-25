@@ -1,0 +1,238 @@
+/*---------------------------------------------------------------------------------------------
+*  Copyright (c) Visual Project Manager contributors. All rights reserved.
+*  Licensed under the GPLv3 License. See License.md in the project root for license information.
+*--------------------------------------------------------------------------------------------*/
+
+body {
+    background: var(--pm-bg);
+}
+
+.home {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+h1 {
+    margin: 0;
+    font-size: 1.6em;
+    font-weight: 400;
+}
+
+.toolbar {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 26px;
+    padding: 2px 8px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--pm-radius);
+    color: var(--pm-link);
+}
+
+.tool span {
+    display: inline-flex;
+}
+
+.tool:hover {
+    background: var(--pm-hover);
+}
+
+.tool.icon-only {
+    color: var(--pm-fg);
+    padding: 2px 5px;
+}
+
+.search input {
+    min-height: 32px;
+    font-size: 1.05em;
+}
+
+.lists {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 4px;
+}
+
+h2 {
+    display: flex;
+    gap: 6px;
+    align-items: baseline;
+    margin: 0 0 6px;
+    font-size: 0.85em;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pm-muted);
+}
+
+h2 .count {
+    font-weight: 400;
+}
+
+.empty {
+    margin: 0;
+    padding: 8px 10px;
+    color: var(--pm-muted);
+}
+
+.rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--pm-border);
+}
+
+.row {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid var(--pm-border);
+    border-radius: var(--pm-radius);
+}
+
+.row:hover,
+.row:focus-within {
+    background: var(--pm-hover);
+}
+
+body.vscode-high-contrast .row:hover {
+    outline: 1px dashed var(--pm-hc-active);
+    outline-offset: -1px;
+}
+
+.row-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    text-align: left;
+    background: transparent;
+    border: 0;
+    border-radius: var(--pm-radius);
+}
+
+.row-main .kind {
+    display: flex;
+    color: var(--pm-muted);
+}
+
+.text {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.name-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.name {
+    font-weight: 600;
+}
+
+.tags {
+    display: inline-flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    padding: 0 6px;
+    border-radius: 8px;
+    font-size: 0.85em;
+    background: var(--pm-badge-bg);
+    color: var(--pm-badge-fg);
+    border: 1px solid var(--pm-hc-border);
+}
+
+.meta {
+    font-size: 0.85em;
+    color: var(--pm-muted);
+}
+
+.path {
+    font-size: 0.9em;
+    color: var(--pm-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.row-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding-right: 6px;
+    opacity: 0.7;
+}
+
+body.vscode-high-contrast .row-actions {
+    opacity: 1;
+}
+
+.row:hover .row-actions,
+.row:focus-within .row-actions,
+.row.pinned .row-actions {
+    opacity: 1;
+}
+
+.action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--pm-radius);
+}
+
+.action:hover {
+    background: var(--vscode-toolbar-hoverBackground, var(--pm-hover));
+}
+
+.footer {
+    margin-top: 12px;
+    color: var(--pm-muted);
+    font-size: 0.85em;
+}
+
+.footer p {
+    margin: 2px 0;
+}
+
+@media (max-width: 480px) {
+    .home {
+        padding: 16px 12px;
+    }
+
+    .tool span + span {
+        display: none;
+    }
+}

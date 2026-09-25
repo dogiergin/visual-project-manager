@@ -10,9 +10,12 @@ import { ProjectManagerContentProvider, ProjectManagerSocialMediaProvider } from
 
 export function registerWhatsNew() {
     const provider = new ProjectManagerContentProvider();
+    const { publisher, name } = Container.context.extension.packageJSON;
     const viewer = new WhatsNewManager(Container.context)
-        .registerContentProvider("alefragnani", "project-manager", provider)
-        .registerSocialMediaProvider(new ProjectManagerSocialMediaProvider());
+        .registerContentProvider(publisher, name, provider)
+        .registerSocialMediaProvider(new ProjectManagerSocialMediaProvider())
+        // the Projects Home is displayed on startup, so updates are announced with a notification instead of a page
+        .setUpdateDisplayKind("notification");
     viewer.showPageInActivation();
     Container.context.subscriptions.push(commands.registerCommand("projectManager.whatsNew", () => viewer.showPage()));
     Container.context.subscriptions.push(commands.registerCommand("_projectManager.whatsNewContextMenu", () => viewer.showPage()));

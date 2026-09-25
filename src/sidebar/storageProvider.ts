@@ -11,7 +11,8 @@ import { PathUtils } from "../utils/path";
 import { isRemotePath } from "../utils/remote";
 import { sortProjects } from "../utils/sorter";
 import { getGitBranch } from "../utils/git";
-import { NO_TAGS_DEFINED } from "./constants";
+import { NO_TAGS_DEFINED, PINNED_PROJECT_NODE_KIND } from "./constants";
+import { SidebarFilter } from "./sidebarFilter";
 import { NoTagNode, ProjectNode, TagNode } from "./nodes";
 
 interface ProjectInQuickPick {
@@ -70,6 +71,23 @@ export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | Ta
         await Container.context.globalState.update(StorageProvider.TAGS_EXPANSION_STATE_KEY, newExpansionState);
     }
 
+    private filterByText(projects: ProjectInQuickPickList): ProjectInQuickPickList {
+        if (!SidebarFilter.hasQuery()) {
+            return projects;
+        }
+        const matching = new Set(this.projectSource.getProjects()
+            .filter(project => SidebarFilter.matchesText(project))
+            .map(project => project.name));
+        return projects.filter(project => matching.has(project.label));
+    }
+
+    private markPinned(node: ProjectNode): ProjectNode {
+        if (this.projectSource.isPinned(node.label)) {
+            node.contextValue = PINNED_PROJECT_NODE_KIND;
+        }
+        return node;
+    }
+
     public refresh(): void {
         this.internalOnDidChangeTreeData.fire();
     }
@@ -87,7 +105,7 @@ export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | Ta
 
                 const nodes: ProjectNode[] = [];
 
-                let projectsMapped = <ProjectInQuickPickList>this.projectSource.getProjectsByTag(element.label);
+                let projectsMapped = this.filterByText(<ProjectInQuickPickList>this.projectSource.getProjectsByTag(element.label));
 
                 if (projectsMapped.length === 0) {
                     resolve(nodes);
@@ -110,7 +128,7 @@ export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | Ta
                     const projectPath = PathUtils.expandHomePath(prj.description);
                     const gitBranch = (showGitBranch === "always" || showGitBranch === "onlyInSideBar") ? getGitBranch(projectPath) : undefined;
 
-                    nodes.push(new ProjectNode(prj.label, vscode.TreeItemCollapsibleState.None,
+                    nodes.push(this.markPinned(new ProjectNode(prj.label, vscode.TreeItemCollapsibleState.None,
                         iconFavorites, {
                             name: prj.label,
                             path: projectPath,
@@ -119,7 +137,7 @@ export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | Ta
                             command: "_projectManager.open",
                             title: "",
                             arguments: [ projectPath, prj.label, prj.profile ],
-                        }));
+                        })));
                 }
 
                 resolve(nodes);
@@ -157,6 +175,11 @@ export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | Ta
                                 || (filterByTags.includes(NO_TAGS_DEFINED) && node.label === ""));
                         }
 
+                        if (SidebarFilter.hasQuery()) {
+                            nodes = nodes.filter(node => this.filterByText(
+                                <ProjectInQuickPickList>this.projectSource.getProjectsByTag(node.label)).length > 0);
+                        }
+
                         resolve(nodes);
                         return;
                     }
@@ -174,6 +197,7 @@ export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | Ta
                 } else {
                     projectsMapped = <ProjectInQuickPickList>this.projectSource.map();
                 }
+                projectsMapped = this.filterByText(projectsMapped);
 
                 projectsMapped = sortProjects(projectsMapped);
 
@@ -192,7 +216,7 @@ export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | Ta
                     const projectPath = PathUtils.expandHomePath(prj.description);
                     const gitBranch = (showGitBranch === "always" || showGitBranch === "onlyInSideBar") ? getGitBranch(projectPath) : undefined;
 
-                    nodes.push(new ProjectNode(prj.label, vscode.TreeItemCollapsibleState.None,
+                    nodes.push(this.markPinned(new ProjectNode(prj.label, vscode.TreeItemCollapsibleState.None,
                         iconFavorites, {
                             name: prj.label,
                             path: projectPath,
@@ -202,7 +226,7 @@ export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | Ta
                             command: "_projectManager.open",
                             title: "",
                             arguments: [ projectPath, prj.label, prj.profile ],
-                        }));
+                        })));
                 }
 
                 resolve(nodes);

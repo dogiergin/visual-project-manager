@@ -36,6 +36,11 @@ import { registerSideBarDecorations } from "./sidebar/decoration";
 import { ProjectNode } from "./sidebar/nodes";
 import { Project } from "./core/project";
 import { ProjectManagerApiImpl } from "./api/apiImpl";
+import { ProjectActions } from "./commands/projectActions";
+import { ProjectsHome } from "./home/projectsHome";
+import { SearchViewProvider } from "./sidebar/searchView";
+import { SidebarFilter } from "./sidebar/sidebarFilter";
+import { migrateProjectsFileFromProjectManager } from "./storage/migration";
 
 let locators: Locators;
 
@@ -48,6 +53,9 @@ export async function activate(context: vscode.ExtensionContext) {
     // Sets storage path if recommended path provided by current version of VS Code.  
     PathUtils.setExtensionContext(context);
 
+    // when replacing the original Project Manager extension, reuse its saved projects
+    migrateProjectsFileFromProjectManager(context, getProjectFilePath());
+
     // load the projects
     locators = new Locators();
     const projectStorage: ProjectStorage = new ProjectStorage(getProjectFilePath());
@@ -55,6 +63,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const providerManager: Providers = new Providers(locators, projectStorage);
     locators.setProviderManager(providerManager);
+
+    const projectActions = new ProjectActions(projectStorage, providerManager);
+    const projectsHome = new ProjectsHome(projectStorage, providerManager, projectActions);
+    new SearchViewProvider(projectStorage, providerManager);
+    vscode.commands.executeCommand("setContext", "projectManager.sideBarFilterActive", SidebarFilter.isActive());
 
     registerRevealFileInOS();
     registerOpenSettings();
@@ -125,6 +138,8 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("_projectManager.editTags", (node) => editTags(node));
     vscode.commands.registerCommand("projectManager.addToFavorites", (node) => saveProject(node));
     vscode.commands.registerCommand("_projectManager.toggleProjectEnabled", (node) => toggleProjectEnabled(node));
+    vscode.commands.registerCommand("_projectManager.pinProject", (node: ProjectNode) => projectActions.setPinned(node.command.arguments[0], true));
+    vscode.commands.registerCommand("_projectManager.unpinProject", (node: ProjectNode) => projectActions.setPinned(node.command.arguments[0], false));
 
     const viewAsList = Container.context.globalState.get<boolean>("viewAsList", true);
     vscode.commands.executeCommand("setContext", "projectManager.viewAsList", viewAsList);
@@ -156,8 +171,7 @@ export async function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-        Container.context.globalState.update("filterByTags", tags);
-        providerManager.refreshStorageTreeView();
+        await SidebarFilter.setTags(tags);
     }
 
     loadProjectsFile();
@@ -172,6 +186,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // // new place to register TreeView
     await providerManager.showTreeViewFromAllProviders();
+
+    projectsHome.showOnStartupIfNeeded();
 
     fs.watchFile(getProjectFilePath(), () => {
         loadProjectsFile();
@@ -551,6 +567,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 Container.stack.rename(oldName, newName);
                 projectStorage.rename(oldName, newName);
                 projectStorage.save();
+                providerManager.refreshStorageTreeView();
                 vscode.window.showInformationMessage(l10n.t("Project renamed!"));
                 updateStatusBar(oldName, node.command.arguments[0], newName);
             } else {
@@ -574,6 +591,7 @@ export async function activate(context: vscode.ExtensionContext) {
         if (picked) {
             projectStorage.editTags(project.name, picked);
             projectStorage.save();
+            providerManager.refreshStorageTreeView();
             vscode.window.showInformationMessage(l10n.t("Project updated!"));
         }
     }
