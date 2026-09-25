@@ -18,7 +18,7 @@ You just have to add the lines below on your `User Settings`.
 
 ```json
     "remote.extensionKind": {
-        "emredogukanergin.visual-project-manager": [
+        "dogiergin.visual-project-manager": [
             "workspace"
         ]
     },

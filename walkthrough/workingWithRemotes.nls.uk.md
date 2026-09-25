@@ -18,7 +18,7 @@ _Це просто працює_
 
 ```json
     "remote.extensionKind": {
-        "emredogukanergin.visual-project-manager": [
+        "dogiergin.visual-project-manager": [
             "workspace"
         ]
     },

@@ -253,7 +253,7 @@ You just have to add the lines below on your `User Settings`.
 
 ```json
     "remote.extensionKind": {
-        "emredogukanergin.visual-project-manager": [
+        "dogiergin.visual-project-manager": [
             "workspace"
         ]
     },
@@ -457,17 +457,17 @@ First, you must add an `extensionDependencies` entry in your `package.json` file
 
 ```json
   "extensionDependencies": [
-    "emredogukanergin.visual-project-manager"
+    "dogiergin.visual-project-manager"
   ],
 ```
 
-Then, retrieve the extension instance with `vscode.extensions.getExtension("emredogukanergin.visual-project-manager")` in your source code, to be able to use the methods that the extension exposes.
+Then, retrieve the extension instance with `vscode.extensions.getExtension("dogiergin.visual-project-manager")` in your source code, to be able to use the methods that the extension exposes.
 
 ```ts
 import { ProjectManagerPublicApi } from './api/projectManager/api';
 
 async function useProjectManagerApi() {
-    const projectManagerApi = <ProjectManagerPublicApi>vscode.extensions.getExtension('emredogukanergin.visual-project-manager')?.exports;
+    const projectManagerApi = <ProjectManagerPublicApi>vscode.extensions.getExtension('dogiergin.visual-project-manager')?.exports;
 
     await projectManagerApi.saveProject("My Project", "/path/to/project", ["work"], "Default");
 }

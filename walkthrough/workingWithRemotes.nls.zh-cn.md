@@ -18,7 +18,7 @@ _它确实有效_
 
 ```json
     "remote.extensionKind": {
-        "emredogukanergin.visual-project-manager": [
+        "dogiergin.visual-project-manager": [
             "workspace"
         ]
     },

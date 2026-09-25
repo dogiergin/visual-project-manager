@@ -18,7 +18,7 @@ Você precisa apenas adicionar as linhas abaixo nas suas `Configurações de Usu
 
 ```json
     "remote.extensionKind": {
-        "emredogukanergin.visual-project-manager": [
+        "dogiergin.visual-project-manager": [
             "workspace"
         ]
     },
