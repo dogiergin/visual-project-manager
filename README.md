@@ -35,7 +35,7 @@ Nobody wants to tag dozens of projects by hand, so tags are **suggested automati
 * **50 categories** (what the project is about): `Data Analysis`, `Machine Learning`, `Generative AI`, `Mobile Development`, `Full Stack`, `Game Development`, `DevOps`, `Event Management`, `Competition / Kaggle`...
 * **90 technologies**: `Python`, `Jupyter`, `TypeScript`, `React`, `Flutter`, `FastAPI`, `Pandas`, `PyTorch`, `Docker`, `PostgreSQL`...
 * Decided by rules, from the files (`*.ipynb` → `Jupyter`, `pubspec.yaml` → `Flutter`), the dependencies and Python imports (`pandas` → `Pandas`, `Data Analysis`), and the words of the folder name or README title (`AI Engineer Program` → `Artificial Intelligence`). Rules can also combine tags (`Frontend` + `Backend` → `Full Stack`) or exclude them (a React Native app is not a website)
-* At most 5 categories (the most specific first) and 8 technologies per project
+* At most 3 categories (the most specific first) and 6 technologies per project
 * Everything runs **locally**, in a few milliseconds per project: only file names, dependencies and the README start are read, and nothing leaves your computer
 * Edit the rules with `Project Manager: Edit Automatic Tag Decisions`. Setting: `projectManager.autoTags.enabled`
 

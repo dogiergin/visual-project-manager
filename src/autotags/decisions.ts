@@ -53,7 +53,7 @@ const GENERATIVE_AI = [
 ];
 
 export const DEFAULT_TAG_DECISIONS: TagDecisions = {
-    limits: { categories: 5, technologies: 8 },
+    limits: { categories: 3, technologies: 6 },
 
     categories: [
         // ---- domains: they say the most about a project
