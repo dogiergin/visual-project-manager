@@ -95,7 +95,10 @@ export class ProjectActions {
     /** Publishes the project tags as GitHub topics, and imports the topics as tags (after a confirmation) */
     public async syncGitHubTopics(rootPath: string): Promise<void> {
         const project = this.ensureSavedProject(rootPath);
-        const added = await syncTagsWithGitHubTopics(project.name, PathUtils.expandHomePath(project.rootPath), project.tags);
+        // topics are public: only technologies and categories are published, personal tags stay private
+        const shareable = project.tags.filter(tag => this.autoTagger.isShareableTag(tag));
+        const personal = project.tags.filter(tag => !this.autoTagger.isShareableTag(tag));
+        const added = await syncTagsWithGitHubTopics(project.name, PathUtils.expandHomePath(project.rootPath), shareable, personal);
         if (!added || added.length === 0) {
             return;
         }

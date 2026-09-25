@@ -7,7 +7,8 @@ import * as assert from "assert";
 import fs = require("fs");
 import os = require("os");
 import path = require("path");
-import { getGitHubRepository, MAX_TOPICS, parseGitConfig, parseGitHubRemote, planTopicsSync, toTopic } from "../../github/githubTopics";
+import { dedupeTags, getGitHubRepository, MAX_TOPICS, parseGitConfig, parseGitHubRemote, planTopicsSync, tagKey, toTopic } from "../../github/githubTopics";
+import { readTopics } from "../../github/githubApi";
 
 suite("GitHub Topics", () => {
 
@@ -64,5 +65,15 @@ suite("GitHub Topics", () => {
         assert.deepStrictEqual(plan.addToGitHub, [ "one" ]);
         assert.deepStrictEqual(plan.skipped, [ "Two" ]);
         assert.strictEqual(plan.topics.length, MAX_TOPICS);
+    });
+
+    test("tags and topics are compared by their topic form", () => {
+        assert.strictEqual(tagKey("Data Analysis"), tagKey("data-analysis"));
+        assert.deepStrictEqual(dedupeTags([ "Data Analysis", "Python", "data-analysis", "python", "kaggle" ]), [ "Data Analysis", "Python", "kaggle" ]);
+    });
+
+    test("reads the topics of a GitHub API response", () => {
+        assert.deepStrictEqual(readTopics({ status: 200, json: { names: [ "python", 3, "jupyter" ] } }), [ "python", "jupyter" ]);
+        assert.deepStrictEqual(readTopics({ status: 404, json: { message: "Not Found" } }), []);
     });
 });

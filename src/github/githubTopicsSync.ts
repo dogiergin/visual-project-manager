@@ -4,52 +4,14 @@
 *  Licensed under the GPLv3 License. See License.md in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import https = require("https");
 import * as vscode from "vscode";
 import { l10n } from "vscode";
+import { gitHubRequest, GitHubResponse, readTopics, topicsUrl } from "./githubApi";
 import { getGitHubRepository, GitHubRepository, planTopicsSync } from "./githubTopics";
 
-const API = "https://api.github.com";
-
-function gitHubRequest(method: "GET" | "PUT", url: string, token: string, body?: unknown): Promise<{ status: number; json: unknown }> {
-    return new Promise((resolve, reject) => {
-        const data = body === undefined ? undefined : Buffer.from(JSON.stringify(body), "utf8");
-        const req = https.request(url, {
-            method,
-            headers: {
-                "Accept": "application/vnd.github+json",
-                "Authorization": `Bearer ${token}`,
-                "User-Agent": "visual-project-manager",
-                "X-GitHub-Api-Version": "2022-11-28",
-                ...(data ? { "Content-Type": "application/json", "Content-Length": data.length } : {})
-            },
-            timeout: 15000
-        }, res => {
-            const chunks: Buffer[] = [];
-            res.on("data", chunk => chunks.push(chunk));
-            res.on("end", () => {
-                const text = Buffer.concat(chunks).toString("utf8");
-                let json: unknown;
-                try {
-                    json = text ? JSON.parse(text) : undefined;
-                } catch {
-                    json = undefined;
-                }
-                resolve({ status: res.statusCode ?? 0, json });
-            });
-        });
-        req.on("timeout", () => req.destroy(new Error("GitHub request timed out")));
-        req.on("error", reject);
-        if (data) {
-            req.write(data);
-        }
-        req.end();
-    });
-}
-
-function errorMessage(status: number, json: unknown): string {
-    const message = (json as { message?: string })?.message;
-    return message ? `${message} (HTTP ${status})` : `HTTP ${status}`;
+function errorMessage(response: GitHubResponse): string {
+    const message = (response.json as { message?: string })?.message;
+    return message ? `${message} (HTTP ${response.status})` : `HTTP ${response.status}`;
 }
 
 export function findGitHubRepository(rootPath: string): GitHubRepository | undefined {
@@ -57,11 +19,35 @@ export function findGitHubRepository(rootPath: string): GitHubRepository | undef
 }
 
 /**
+ * Signs in with the smallest permission first (`public_repo`). Only when the repository is private (GitHub answers 404),
+ * the user is asked for the `repo` permission, which also gives access to private repositories.
+ */
+async function readTopicsSignedIn(repository: GitHubRepository): Promise<{ token: string; response: GitHubResponse } | undefined> {
+    const fullName = `${repository.owner}/${repository.name}`;
+    let session = await vscode.authentication.getSession("github", [ "public_repo" ], { createIfNone: true });
+    let response = await gitHubRequest("GET", topicsUrl(repository), session.accessToken);
+
+    if (response.status === 404) {
+        const allow = l10n.t("Allow Private Repositories");
+        const answer = await vscode.window.showWarningMessage(
+            l10n.t("{0} was not found. If it is a private repository, GitHub needs a wider permission (access to private repositories).", fullName),
+            { modal: true }, allow);
+        if (answer !== allow) {
+            return undefined;
+        }
+        session = await vscode.authentication.getSession("github", [ "repo" ], { createIfNone: true });
+        response = await gitHubRequest("GET", topicsUrl(repository), session.accessToken);
+    }
+    return { token: session.accessToken, response };
+}
+
+/**
  * Two way sync between the project tags and the topics of its GitHub repository.
+ * Only `shareableTags` (technologies and categories) are published: topics are public.
  * Nothing is removed. The user confirms before anything is written to GitHub.
  * Returns the tags to add to the project, or undefined when cancelled.
  */
-export async function syncTagsWithGitHubTopics(projectName: string, rootPath: string, projectTags: string[]): Promise<string[] | undefined> {
+export async function syncTagsWithGitHubTopics(projectName: string, rootPath: string, shareableTags: string[], personalTags: string[]): Promise<string[] | undefined> {
     const repository = getGitHubRepository(rootPath);
     if (!repository) {
         vscode.window.showWarningMessage(l10n.t("\"{0}\" has no GitHub remote. Publish it to GitHub first (Source Control: Publish to GitHub).", projectName));
@@ -69,62 +55,55 @@ export async function syncTagsWithGitHubTopics(projectName: string, rootPath: st
     }
     const fullName = `${repository.owner}/${repository.name}`;
 
-    // VS Code built-in GitHub sign in. `public_repo` is enough for public repositories, `repo` covers private ones.
-    let session: vscode.AuthenticationSession;
+    let signedIn: { token: string; response: GitHubResponse } | undefined;
     try {
-        session = await vscode.authentication.getSession("github", [ "repo" ], { createIfNone: true });
+        signedIn = await readTopicsSignedIn(repository);
     } catch {
+        return undefined; // sign in cancelled
+    }
+    if (!signedIn) {
+        return undefined;
+    }
+    if (signedIn.response.status !== 200) {
+        vscode.window.showErrorMessage(l10n.t("Could not read the GitHub topics of {0}: {1}", fullName, errorMessage(signedIn.response)));
         return undefined;
     }
 
-    const topicsUrl = `${API}/repos/${encodeURIComponent(repository.owner)}/${encodeURIComponent(repository.name)}/topics`;
+    const plan = planTopicsSync(shareableTags, readTopics(signedIn.response));
+    if (plan.addToGitHub.length === 0 && plan.addToProject.length === 0) {
+        vscode.window.showInformationMessage(l10n.t("The tags of \"{0}\" and the GitHub topics of {1} are already in sync.", projectName, fullName));
+        return [];
+    }
 
-    return vscode.window.withProgress({
-        location: vscode.ProgressLocation.Notification,
-        title: l10n.t("GitHub topics of {0}", fullName)
-    }, async () => {
-        const current = await gitHubRequest("GET", topicsUrl, session.accessToken);
-        if (current.status !== 200) {
-            vscode.window.showErrorMessage(l10n.t("Could not read the GitHub topics of {0}: {1}", fullName, errorMessage(current.status, current.json)));
+    const lines = [
+        plan.addToGitHub.length > 0 ? l10n.t("Add to GitHub: {0}", plan.addToGitHub.join(", ")) : undefined,
+        plan.addToProject.length > 0 ? l10n.t("Add to the project tags: {0}", plan.addToProject.join(", ")) : undefined,
+        plan.skipped.length > 0 ? l10n.t("Not added (GitHub allows 20 topics): {0}", plan.skipped.join(", ")) : undefined,
+        personalTags.length > 0 ? l10n.t("Kept private (personal tags): {0}", personalTags.join(", ")) : undefined
+    ].filter(Boolean).join("\n");
+
+    const confirm = l10n.t("Sync");
+    const answer = await vscode.window.showInformationMessage(
+        l10n.t("Sync the tags of \"{0}\" with the GitHub topics of {1}?", projectName, fullName),
+        { modal: true, detail: lines },
+        confirm);
+    if (answer !== confirm) {
+        return undefined;
+    }
+
+    if (plan.addToGitHub.length > 0) {
+        const updated = await gitHubRequest("PUT", topicsUrl(repository), signedIn.token, { names: plan.topics });
+        if (updated.status !== 200) {
+            vscode.window.showErrorMessage(l10n.t("Could not update the GitHub topics of {0}: {1}", fullName, errorMessage(updated)));
             return undefined;
         }
-        const gitHubTopics = ((current.json as { names?: string[] })?.names ?? []);
-        const plan = planTopicsSync(projectTags, gitHubTopics);
+    }
 
-        if (plan.addToGitHub.length === 0 && plan.addToProject.length === 0) {
-            vscode.window.showInformationMessage(l10n.t("The tags of \"{0}\" and the GitHub topics of {1} are already in sync.", projectName, fullName));
-            return [];
+    const open = l10n.t("Open on GitHub");
+    vscode.window.showInformationMessage(l10n.t("Tags synced with the GitHub topics of {0}.", fullName), open).then(choice => {
+        if (choice === open) {
+            vscode.env.openExternal(vscode.Uri.parse(`https://github.com/${fullName}`));
         }
-
-        const lines = [
-            plan.addToGitHub.length > 0 ? l10n.t("Add to GitHub: {0}", plan.addToGitHub.join(", ")) : undefined,
-            plan.addToProject.length > 0 ? l10n.t("Add to the project tags: {0}", plan.addToProject.join(", ")) : undefined,
-            plan.skipped.length > 0 ? l10n.t("Not added (GitHub allows 20 topics): {0}", plan.skipped.join(", ")) : undefined
-        ].filter(Boolean).join("\n");
-
-        const confirm = l10n.t("Sync");
-        const answer = await vscode.window.showInformationMessage(
-            l10n.t("Sync the tags of \"{0}\" with the GitHub topics of {1}?", projectName, fullName),
-            { modal: true, detail: lines },
-            confirm);
-        if (answer !== confirm) {
-            return undefined;
-        }
-
-        if (plan.addToGitHub.length > 0) {
-            const updated = await gitHubRequest("PUT", topicsUrl, session.accessToken, { names: plan.topics });
-            if (updated.status !== 200) {
-                vscode.window.showErrorMessage(l10n.t("Could not update the GitHub topics of {0}: {1}", fullName, errorMessage(updated.status, updated.json)));
-                return undefined;
-            }
-        }
-
-        const open = l10n.t("Open on GitHub");
-        vscode.window.showInformationMessage(l10n.t("Tags synced with the GitHub topics of {0}.", fullName), open).then(choice => {
-            if (choice === open) {
-                vscode.env.openExternal(vscode.Uri.parse(`https://github.com/${fullName}`));
-            }
-        });
-        return plan.addToProject;
     });
+    return plan.addToProject;
 }

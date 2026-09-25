@@ -202,7 +202,8 @@ export async function activate(context: vscode.ExtensionContext) {
     Container.currentProject = currentProject;
 
     // // new place to register TreeView
-    await providerManager.showTreeViewFromAllProviders();
+    // not awaited: the extension is activated at startup (`*`), so it must not hold VS Code while projects are detected
+    providerManager.showTreeViewFromAllProviders().catch(error => console.log(error));
 
     fs.watchFile(getProjectFilePath(), () => {
         loadProjectsFile();

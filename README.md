@@ -23,7 +23,7 @@ A **Projects page** that opens instead of the classic Welcome page, with **pinne
 
 ### Projects page
 * Opens on startup instead of the VS Code **Welcome** page, also as a new tab when VS Code reopens your last project (setting `projectManager.home.showOnStartup`: `always` (default), `emptyWindow` or `never`)
-* Opens fast: VS Code restores the page tab itself, and the last projects are displayed from a cache while fresh data loads
+* Opens fast: the extension starts with VS Code, the page opens before any project scan, and the last projects are displayed from a cache while fresh data loads
 * **Pinned** projects at the top, followed by the **Recent** local projects (from the VS Code _Open Recent_ history, local folders and workspaces only)
 * One search box: type a project name, or `#tag` to filter by tag. Tag chips can also be used as a filter
 * Pin/unpin, open in a new window and edit tags right from each row
@@ -41,8 +41,10 @@ Nobody wants to tag dozens of projects by hand, so tags are **suggested automati
 Tags can be shared with everybody through **GitHub topics** (the tags displayed on a repository page, and used by the GitHub search):
 
 * Use `Sync Tags with GitHub Topics` (the ☁ button or the `G` key in the Projects page, the project context menu in the Side Bar, or the Command Palette for the current folder)
-* The project tags become topics (`Data Analysis` → `data-analysis`, `C#` → `csharp`), and the repository topics become project tags. Nothing is ever removed
-* You always confirm what will be added before anything is written to GitHub. It uses the VS Code GitHub sign in, and works for projects whose `origin` remote is on GitHub
+* **Reading is automatic**: the topics of a public repository are suggested as ✨ tags, without signing in (refreshed once a day; setting `projectManager.autoTags.gitHubTopics`)
+* **Publishing only shares technologies and categories** (`Python`, `Jupyter`, `Data Analysis`...), because topics are public. Personal tags like `Work` or a customer name always stay private
+* Tags become topics (`Data Analysis` → `data-analysis`, `C#` → `csharp`) and topics become tags. Nothing is ever removed
+* You always confirm what will be added before anything is written to GitHub. It signs in with the smallest permission (`public_repo`); the permission for private repositories is only requested for a private repository
 
 To use Ollaya, install it from [ollaya.dev](https://ollaya.dev) and keep it running (default address `http://localhost:11435`).
 

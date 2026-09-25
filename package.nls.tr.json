@@ -37,5 +37,6 @@
     "projectManager.commands.openSettings#sideBarFavorites.title": "Ayarlar",
     "projectManager.submenus.viewAndSort#sideBarFavorites.title": "Görünüm ve Sıralama",
     "projectManager.commands.syncGitHubTopics.title": "Project Manager: Etiketleri GitHub Konularıyla Eşitle",
-    "projectManager.commands.syncGitHubTopics#sideBar.title": "Etiketleri GitHub Konularıyla Eşitle"
+    "projectManager.commands.syncGitHubTopics#sideBar.title": "Etiketleri GitHub Konularıyla Eşitle",
+    "projectManager.configuration.autoTags.gitHubTopics.description": "Her projenin GitHub deposundaki konuları etiket olarak öner (herkese açık depolar, giriş gerekmez)"
 }

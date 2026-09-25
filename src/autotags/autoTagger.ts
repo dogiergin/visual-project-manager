@@ -14,6 +14,8 @@ import { isRemotePath } from "../utils/remote";
 import { DEFAULT_TAG_DECISIONS, evaluateRules, mergeDecisions, TagDecisions } from "./decisions";
 import { decideCategories, isOllayaAvailable } from "./ollayaClient";
 import { getFolderSignature, scanProject } from "./projectScanner";
+import { fetchPublicTopics } from "../github/githubApi";
+import { dedupeTags, getGitHubRepository, tagKey } from "../github/githubTopics";
 
 export enum AutoTagsEngine {
     auto = "auto",     // rules + Ollaya when its server is running
@@ -31,10 +33,21 @@ const CACHE_KEY = "autoTags.cache";
 const REJECTED_KEY = "autoTags.rejected";
 const DECISIONS_FILE = "tag-decisions.json";
 const AVAILABILITY_TTL = 60 * 1000;
+// the extension starts with VS Code: leave the first seconds to the editor
+const STARTUP_DELAY = 2000;
+const TOPICS_KEY = "autoTags.gitHubTopics";
+// public GitHub API: 60 requests per hour without signing in, so topics are refreshed once a day
+const TOPICS_TTL = 24 * 60 * 60 * 1000;
+
+interface TopicsEntry {
+    topics: string[];
+    fetchedAt: number;
+}
 
 export class AutoTagger {
 
     private cache: Record<string, CacheEntry>;
+    private topicsCache: Record<string, TopicsEntry>;
     private queue: string[] = [];
     private running = false;
     private decisions: TagDecisions = DEFAULT_TAG_DECISIONS;
@@ -42,12 +55,14 @@ export class AutoTagger {
     private ollayaCheckedAt = 0;
     private ollayaAvailable = false;
     private warnedOllayaMissing = false;
+    private readonly createdAt = Date.now();
 
     private readonly onDidChangeEmitter = new vscode.EventEmitter<void>();
     public readonly onDidChange = this.onDidChangeEmitter.event;
 
     constructor() {
         this.cache = Container.context.globalState.get<Record<string, CacheEntry>>(CACHE_KEY, {});
+        this.topicsCache = Container.context.globalState.get<Record<string, TopicsEntry>>(TOPICS_KEY, {});
         this.loadDecisions();
 
         Container.context.subscriptions.push(
@@ -105,9 +120,27 @@ export class AutoTagger {
         if (!entry) {
             return [];
         }
-        const rejected = this.getRejected(rootPath);
-        const existing = existingTags.map(tag => tag.toLocaleLowerCase());
-        return entry.tags.filter(tag => !existing.includes(tag.toLocaleLowerCase()) && !rejected.includes(tag));
+        const rejected = this.getRejected(rootPath).map(tagKey);
+        const existing = existingTags.map(tagKey);
+        return entry.tags.filter(tag => !existing.includes(tagKey(tag)) && !rejected.includes(tagKey(tag)));
+    }
+
+    /**
+     * Technology and category tags (the ones the decisions can produce) can be published as GitHub topics.
+     * Any other tag is personal (like `Work` or a customer name) and stays private.
+     */
+    public isShareableTag(tag: string): boolean {
+        const key = tagKey(tag);
+        const known = [
+            ...this.decisions.rules.map(rule => rule.tag),
+            ...Object.keys(this.decisions.ollaya.categories),
+            ...this.decisions.ollaya.fallbackRules.map(rule => rule.tag)
+        ];
+        return known.some(item => tagKey(item) === key);
+    }
+
+    private get gitHubTopicsEnabled(): boolean {
+        return this.config.get<boolean>("gitHubTopics", true);
     }
 
     public getRejected(rootPath: string): string[] {
@@ -131,7 +164,7 @@ export class AutoTagger {
         }
         if (!this.running) {
             this.running = true;
-            setTimeout(() => this.processQueue(), 0);
+            setTimeout(() => this.processQueue(), Math.max(0, STARTUP_DELAY - (Date.now() - this.createdAt)));
         }
     }
 
@@ -166,8 +199,23 @@ export class AutoTagger {
         const categoriesBy = useOllaya ? "ollaya" : "rules";
         const signature = `${folderSignature}|${this.decisionsHash}|${categoriesBy}`;
         const key = AutoTagger.key(rootPath);
-        if (this.cache[ key ]?.signature === signature) {
+
+        // topics of the GitHub repository, read without signing in (public repositories only)
+        const repository = this.gitHubTopicsEnabled ? getGitHubRepository(rootPath) : undefined;
+        const repositoryKey = repository ? `${repository.owner}/${repository.name}`.toLowerCase() : "";
+        const topicsEntry = repository ? this.topicsCache[ repositoryKey ] : undefined;
+        const topicsFresh = !repository || (!!topicsEntry && Date.now() - topicsEntry.fetchedAt < TOPICS_TTL);
+
+        if (this.cache[ key ]?.signature === signature && topicsFresh) {
             return false;
+        }
+
+        let topics = topicsEntry?.topics ?? [];
+        if (repository && !topicsFresh) {
+            topics = (await fetchPublicTopics(repository)) ?? topics;
+            // also remembered on failure (private repository, offline), to stay under the rate limit
+            this.topicsCache[ repositoryKey ] = { topics, fetchedAt: Date.now() };
+            await Container.context.globalState.update(TOPICS_KEY, this.topicsCache);
         }
 
         const summary = await scanProject(rootPath);
@@ -194,7 +242,7 @@ export class AutoTagger {
             categories = evaluateRules(summary, this.decisions.ollaya.fallbackRules);
         }
 
-        const tags = [ ...categories, ...evaluateRules(summary, this.decisions.rules).filter(tag => !categories.includes(tag)) ];
+        const tags = dedupeTags([ ...categories, ...evaluateRules(summary, this.decisions.rules), ...topics ]);
         const previous = this.cache[ key ];
         this.cache[ key ] = { signature: `${folderSignature}|${this.decisionsHash}|${by}`, tags, categoriesBy: by };
         return !previous || previous.tags.join("|") !== tags.join("|");
@@ -225,6 +273,8 @@ export class AutoTagger {
 
     public async refreshAll() {
         this.cache = {};
+        this.topicsCache = {};
+        await Container.context.globalState.update(TOPICS_KEY, this.topicsCache);
         this.ollayaCheckedAt = 0;
         await Container.context.globalState.update(CACHE_KEY, this.cache);
         this.onDidChangeEmitter.fire();

@@ -136,3 +136,20 @@ export function planTopicsSync(projectTags: string[], gitHubTopics: string[]): T
     const addToProject = gitHubTopics.filter(topic => !projectTopics.has(topic));
     return { addToGitHub, addToProject, topics, skipped };
 }
+
+/** Compares tags and topics: `Data Analysis`, `data analysis` and `data-analysis` are the same */
+export function tagKey(tag: string): string {
+    return toTopic(tag) ?? tag.trim().toLowerCase();
+}
+
+export function dedupeTags(tags: string[]): string[] {
+    const seen = new Set<string>();
+    return tags.filter(tag => {
+        const key = tagKey(tag);
+        if (seen.has(key)) {
+            return false;
+        }
+        seen.add(key);
+        return true;
+    });
+}

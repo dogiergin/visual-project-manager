@@ -149,5 +149,6 @@
     "projectManager.configuration.autoTags.ollaya.url.description": "Address of the local Ollaya server",
     "projectManager.configuration.autoTags.ollaya.model.description": "Ollaya decision model used for the categories",
     "projectManager.commands.syncGitHubTopics.title": "Project Manager: Sync Tags with GitHub Topics",
-    "projectManager.commands.syncGitHubTopics#sideBar.title": "Sync Tags with GitHub Topics"
+    "projectManager.commands.syncGitHubTopics#sideBar.title": "Sync Tags with GitHub Topics",
+    "projectManager.configuration.autoTags.gitHubTopics.description": "Suggest the topics of the GitHub repository of each project as tags (public repositories, no sign in needed)"
 }

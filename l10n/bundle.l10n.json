@@ -122,5 +122,8 @@
     "Tags synced with the GitHub topics of {0}.": "Tags synced with the GitHub topics of {0}.",
     "Open a local project folder first.": "Open a local project folder first.",
     "Undo": "Undo",
-    "The Projects page now opens instead of the VS Code Welcome page.": "The Projects page now opens instead of the VS Code Welcome page."
+    "The Projects page now opens instead of the VS Code Welcome page.": "The Projects page now opens instead of the VS Code Welcome page.",
+    "Allow Private Repositories": "Allow Private Repositories",
+    "{0} was not found. If it is a private repository, GitHub needs a wider permission (access to private repositories).": "{0} was not found. If it is a private repository, GitHub needs a wider permission (access to private repositories).",
+    "Kept private (personal tags): {0}": "Kept private (personal tags): {0}"
 }
