@@ -66,7 +66,9 @@ type HomeMessage =
     | { type: "command"; command: "openFolder" | "cloneRepository" | "listProjects" | "saveProject" | "openSettings" };
 
 const VIEW_TYPE = "projectManager.home";
-const ASKED_ABOUT_STARTUP_EDITOR_KEY = "home.askedAboutStartupEditor";
+const REPLACED_WELCOME_PAGE_KEY = "home.replacedWelcomePage";
+// the last data sent to the page, so the next startup can display it immediately
+const LAST_DATA_KEY = "home.lastData";
 
 function gitHubName(rootPath: string): string | undefined {
     const repository = isRemotePath(rootPath) ? undefined : findGitHubRepository(rootPath);
@@ -85,6 +87,17 @@ export class ProjectsHome {
     ) {
         Container.context.subscriptions.push(
             vscode.commands.registerCommand("projectManager.openHome", () => this.show()),
+            // VS Code restores the Projects tab at startup (activation event `onWebviewPanel:projectManager.home`),
+            // before the `onStartupFinished` extensions, so it appears right away
+            vscode.window.registerWebviewPanelSerializer(VIEW_TYPE, {
+                deserializeWebviewPanel: async (panel: vscode.WebviewPanel) => {
+                    if (this.panel) {
+                        panel.dispose();
+                        return;
+                    }
+                    this.attach(panel);
+                }
+            }),
             providers.onDidChangeStorage(() => this.refresh()),
             autoTagger.onDidChange(() => this.refresh()),
             vscode.workspace.onDidChangeConfiguration(cfg => {
@@ -96,13 +109,24 @@ export class ProjectsHome {
     }
 
     public async showOnStartupIfNeeded(): Promise<void> {
-        const mode = vscode.workspace.getConfiguration("projectManager").get<string>("home.showOnStartup", ShowHomeOnStartup.emptyWindow);
-        const isEmptyWindow = !vscode.workspace.workspaceFolders && !vscode.workspace.workspaceFile;
+        await this.replaceWelcomePage();
 
-        if (mode === ShowHomeOnStartup.always || (mode === ShowHomeOnStartup.emptyWindow && isEmptyWindow)) {
-            this.show(mode === ShowHomeOnStartup.always && !isEmptyWindow);
-            await this.suggestDisablingWelcomePage();
+        const mode = vscode.workspace.getConfiguration("projectManager").get<string>("home.showOnStartup", ShowHomeOnStartup.always);
+        const isEmptyWindow = !vscode.workspace.workspaceFolders && !vscode.workspace.workspaceFile;
+        if (mode === ShowHomeOnStartup.never || (mode === ShowHomeOnStartup.emptyWindow && !isEmptyWindow)) {
+            return;
         }
+        // already restored by VS Code (or being restored): do not open a second one
+        if (this.panel || this.hasProjectsTab()) {
+            return;
+        }
+        // a new tab, next to the editors restored with the last project
+        this.show();
+    }
+
+    private hasProjectsTab(): boolean {
+        return vscode.window.tabGroups.all.some(group => group.tabs.some(tab =>
+            tab.input instanceof vscode.TabInputWebview && tab.input.viewType.endsWith(VIEW_TYPE)));
     }
 
     public show(preserveFocus = false) {
@@ -110,33 +134,48 @@ export class ProjectsHome {
             this.panel.reveal(undefined, preserveFocus);
             return;
         }
+        this.attach(vscode.window.createWebviewPanel(VIEW_TYPE, l10n.t("Projects"), { viewColumn: vscode.ViewColumn.One, preserveFocus }, this.webviewOptions()));
+    }
 
-        this.panel = vscode.window.createWebviewPanel(VIEW_TYPE, l10n.t("Projects"), { viewColumn: vscode.ViewColumn.One, preserveFocus }, {
+    private webviewOptions(): vscode.WebviewOptions & vscode.WebviewPanelOptions {
+        return {
             enableScripts: true,
             localResourceRoots: [ vscode.Uri.joinPath(Container.context.extensionUri, "media") ]
-        });
-        this.panel.iconPath = vscode.Uri.joinPath(Container.context.extensionUri, "docs", "images", "project-manager-side-bar.svg");
-        this.panel.webview.html = buildWebviewHtml(this.panel.webview, {
+        };
+    }
+
+    private attach(panel: vscode.WebviewPanel) {
+        this.panel = panel;
+        panel.webview.options = this.webviewOptions();
+        panel.iconPath = vscode.Uri.joinPath(Container.context.extensionUri, "docs", "images", "project-manager-side-bar.svg");
+        panel.webview.html = buildWebviewHtml(panel.webview, {
             title: l10n.t("Projects"),
             script: "home/home.js",
             style: "home/home.css",
-            strings: this.getStrings()
+            strings: this.getStrings(),
+            initialData: Container.context.globalState.get<HomeData>(LAST_DATA_KEY)
         });
 
-        this.panel.webview.onDidReceiveMessage((message: HomeMessage) => this.handleMessage(message));
-        this.panel.onDidChangeViewState(event => {
+        panel.webview.onDidReceiveMessage((message: HomeMessage) => this.handleMessage(message));
+        panel.onDidChangeViewState(event => {
             if (event.webviewPanel.visible) {
                 this.refresh();
             }
         });
-        this.panel.onDidDispose(() => this.panel = undefined);
+        panel.onDidDispose(() => {
+            if (this.panel === panel) {
+                this.panel = undefined;
+            }
+        });
     }
 
     public async refresh() {
         if (!this.panel || !this.panel.visible) {
             return;
         }
-        this.panel.webview.postMessage({ type: "data", data: await this.getData() });
+        const data = await this.getData();
+        this.panel?.webview.postMessage({ type: "data", data });
+        Container.context.globalState.update(LAST_DATA_KEY, data);
     }
 
     private async handleMessage(message: HomeMessage) {
@@ -239,20 +278,30 @@ export class ProjectsHome {
         return { pinned, recent, all, tags, limits, theme };
     }
 
-    /** VS Code opens its own Welcome page unless `workbench.startupEditor` is `none`. Ask only once. */
-    private async suggestDisablingWelcomePage() {
-        const workbench = vscode.workspace.getConfiguration("workbench");
-        if (workbench.get<string>("startupEditor") === "none" || Container.context.globalState.get<boolean>(ASKED_ABOUT_STARTUP_EDITOR_KEY, false)) {
+    /**
+     * VS Code opens its own Welcome page unless `workbench.startupEditor` is `none`. The extension default
+     * (`configurationDefaults`) covers most users; a value set by the user is replaced once, with an Undo.
+     */
+    private async replaceWelcomePage() {
+        if (Container.context.globalState.get<boolean>(REPLACED_WELCOME_PAGE_KEY, false)) {
             return;
         }
-        await Container.context.globalState.update(ASKED_ABOUT_STARTUP_EDITOR_KEY, true);
+        await Container.context.globalState.update(REPLACED_WELCOME_PAGE_KEY, true);
 
-        const optionYes = l10n.t("Yes, hide the Welcome page");
-        const answer = await vscode.window.showInformationMessage(
-            l10n.t("Do you want the Projects page to replace the VS Code Welcome page on startup?"), optionYes, l10n.t("No"));
-        if (answer === optionYes) {
-            await workbench.update("startupEditor", "none", vscode.ConfigurationTarget.Global);
+        const workbench = vscode.workspace.getConfiguration("workbench");
+        if (workbench.get<string>("startupEditor") === "none") {
+            return;
         }
+        const previous = workbench.inspect<string>("startupEditor")?.globalValue;
+        await workbench.update("startupEditor", "none", vscode.ConfigurationTarget.Global);
+
+        const undo = l10n.t("Undo");
+        vscode.window.showInformationMessage(l10n.t("The Projects page now opens instead of the VS Code Welcome page."), undo).then(async answer => {
+            if (answer === undo) {
+                await vscode.workspace.getConfiguration("workbench").update("startupEditor", previous, vscode.ConfigurationTarget.Global);
+                await vscode.workspace.getConfiguration("projectManager").update("home.showOnStartup", ShowHomeOnStartup.never, vscode.ConfigurationTarget.Global);
+            }
+        });
     }
 
     private getStrings(): Record<string, string> {

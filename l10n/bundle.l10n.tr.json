@@ -81,5 +81,7 @@
     "Could not update the GitHub topics of {0}: {1}": "{0} GitHub konuları güncellenemedi: {1}",
     "Open on GitHub": "GitHub'da Aç",
     "Tags synced with the GitHub topics of {0}.": "Etiketler {0} GitHub konularıyla eşitlendi.",
-    "Open a local project folder first.": "Önce yerel bir proje klasörü açın."
+    "Open a local project folder first.": "Önce yerel bir proje klasörü açın.",
+    "Undo": "Geri Al",
+    "The Projects page now opens instead of the VS Code Welcome page.": "Artık VS Code Hoş Geldiniz sayfası yerine Projeler sayfası açılıyor."
 }

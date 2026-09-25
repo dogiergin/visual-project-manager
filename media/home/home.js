@@ -26,10 +26,20 @@
         return merged;
     }
 
+    function readInitialData() {
+        try {
+            const text = document.getElementById("initial-data")?.textContent;
+            return text ? JSON.parse(text) : undefined;
+        } catch {
+            return undefined;
+        }
+    }
+    const initialData = readInitialData();
+
     const saved = vscode.getState() || {};
     const state = {
-        data: normalizeData(),
-        loaded: false,
+        data: normalizeData(initialData),
+        loaded: !!initialData,
         query: saved.query || "",
         selectedTags: saved.selectedTags || [],
         expanded: saved.expanded || {},  // sections temporarily showing all projects

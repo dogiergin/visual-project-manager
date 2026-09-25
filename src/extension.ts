@@ -190,6 +190,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     loadProjectsFile();
 
+    // as early as possible: the Side Bar and the auto-detection below can take a while
+    projectsHome.showOnStartupIfNeeded();
+
     // TODO: Extract the detection of the current project from `showStatusBar`, and optimize how it works.
     // Evaluate if it is really necessary to get the `Project` instance, or if just the root path is enough.
     // Up until then, the call to `showStatusBar` (and the assignment to `Container.currentProject`)
@@ -200,8 +203,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // // new place to register TreeView
     await providerManager.showTreeViewFromAllProviders();
-
-    projectsHome.showOnStartupIfNeeded();
 
     fs.watchFile(getProjectFilePath(), () => {
         loadProjectsFile();

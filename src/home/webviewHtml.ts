@@ -13,6 +13,7 @@ export interface WebviewPage {
     script: string;   // relative to `media`
     style: string;    // relative to `media`
     strings: Record<string, string>;
+    initialData?: unknown; // displayed immediately, before the extension sends fresh data
 }
 
 function escapeHtml(value: string): string {
@@ -24,6 +25,7 @@ export function buildWebviewHtml(webview: Webview, page: WebviewPage): string {
     const media = (file: string) => webview.asWebviewUri(Uri.joinPath(Container.context.extensionUri, "media", file));
     // JSON inside a <script> block: escape `<` so the content can never close the tag
     const strings = JSON.stringify(page.strings).replace(/</g, "\\u003c");
+    const initialData = page.initialData === undefined ? "" : JSON.stringify(page.initialData).replace(/</g, "\\u003c");
 
     return `<!DOCTYPE html>
 <html lang="${escapeHtml(env.language)}">
@@ -38,6 +40,7 @@ export function buildWebviewHtml(webview: Webview, page: WebviewPage): string {
 <body>
     <div id="app"></div>
     <script nonce="${nonce}" id="strings" type="application/json">${strings}</script>
+    <script nonce="${nonce}" id="initial-data" type="application/json">${initialData}</script>
     <script nonce="${nonce}" src="${media("shared/projectQuery.js")}"></script>
     <script nonce="${nonce}" src="${media("shared/icons.js")}"></script>
     <script nonce="${nonce}" src="${media(page.script)}"></script>

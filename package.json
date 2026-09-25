@@ -56,7 +56,8 @@
 		"url": "https://github.com/dogiergin/visual-project-manager/issues"
 	},
 	"activationEvents": [
-		"onStartupFinished"
+		"onStartupFinished",
+		"onWebviewPanel:projectManager.home"
 	],
 	"main": "./dist/extension",
 	"l10n": "./l10n",
@@ -997,15 +998,15 @@
 					},
 					"projectManager.home.showOnStartup": {
 						"type": "string",
-						"default": "emptyWindow",
+						"default": "always",
 						"enum": [
-							"emptyWindow",
 							"always",
+							"emptyWindow",
 							"never"
 						],
 						"enumDescriptions": [
-							"%projectManager.configuration.home.showOnStartup.enumDescriptions.emptyWindow%",
 							"%projectManager.configuration.home.showOnStartup.enumDescriptions.always%",
+							"%projectManager.configuration.home.showOnStartup.enumDescriptions.emptyWindow%",
 							"%projectManager.configuration.home.showOnStartup.enumDescriptions.never%"
 						],
 						"description": "%projectManager.configuration.home.showOnStartup.description%"

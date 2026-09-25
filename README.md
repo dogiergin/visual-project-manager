@@ -22,7 +22,8 @@ A **Projects page** that opens instead of the classic Welcome page, with **pinne
 ## What's new in this fork
 
 ### Projects page
-* Opens on startup instead of the VS Code **Welcome** page (setting `projectManager.home.showOnStartup`: `emptyWindow` (default), `always` or `never`)
+* Opens on startup instead of the VS Code **Welcome** page, also as a new tab when VS Code reopens your last project (setting `projectManager.home.showOnStartup`: `always` (default), `emptyWindow` or `never`)
+* Opens fast: VS Code restores the page tab itself, and the last projects are displayed from a cache while fresh data loads
 * **Pinned** projects at the top, followed by the **Recent** local projects (from the VS Code _Open Recent_ history, local folders and workspaces only)
 * One search box: type a project name, or `#tag` to filter by tag. Tag chips can also be used as a filter
 * Pin/unpin, open in a new window and edit tags right from each row

@@ -120,5 +120,7 @@
     "Could not update the GitHub topics of {0}: {1}": "Could not update the GitHub topics of {0}: {1}",
     "Open on GitHub": "Open on GitHub",
     "Tags synced with the GitHub topics of {0}.": "Tags synced with the GitHub topics of {0}.",
-    "Open a local project folder first.": "Open a local project folder first."
+    "Open a local project folder first.": "Open a local project folder first.",
+    "Undo": "Undo",
+    "The Projects page now opens instead of the VS Code Welcome page.": "The Projects page now opens instead of the VS Code Welcome page."
 }
