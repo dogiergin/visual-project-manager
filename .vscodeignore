@@ -29,7 +29,7 @@ scripts/**
 images/**
 !images/screenshots/projects-page-search.png
 docs/images/**
-!docs/images/icon.png
+!images/icon.png
 !docs/images/project-manager-side-bar.svg
 !docs/images/project-manager-save.png
 !docs/images/project-manager-list-sort-by-name.png

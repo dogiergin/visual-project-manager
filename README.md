@@ -1,3 +1,5 @@
+<p align="center"><img src="images/icon.png" alt="" width="96" /></p>
+
 # Visual Project Manager
 
 A **Projects page** that opens instead of the classic Welcome page, with **pinned** and **recently opened** projects, search by **name** or **#tag**, and a more accessible **Side Bar**.
